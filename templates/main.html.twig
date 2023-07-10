@@ -1,7 +1,43 @@
 {% extends 'base.html.twig' %}
 
 {% block container %}
+<!-- BANNER -->
+<header class="masthead text-center text-white">
+            <div class="masthead-content">
+                <div class="container px-5">
+                    <div class="graybox">
+                        <h1 class="masthead-heading mb-0">La montagne</h1>
+                        <h2 class="masthead-subheading mb-0">attend tes tricks</h2>
+                    </div>
+                    <a class="btn btn-primary btn-xl rounded-pill mt-5" href="#repere">Apprendre</a>
+                </div>
+            </div>
+            <div class="bg-circle-1 bg-circle"></div>
+            <div class="bg-circle-2 bg-circle"></div>
+            <div class="bg-circle-3 bg-circle"></div>
+            <div class="bg-circle-4 bg-circle"></div>
+</header>
+
+<!-- TRICKS -->
+<section class="my-3">
 <div class="container">
-    <h1>Ma page d'accueil</h1>
+<div id="repere" class="row d-flex justify-content-center justify-content-lg-start">
+<div class="card col-11 col-md-4 col-lg-3 m-2">
+        <img src="https://media.istockphoto.com/id/959512078/fr/photo/jeune-fille-effectue-des-sauts-avec-snowboard.jpg?s=612x612&w=0&k=20&c=2jgS-MMmTE6IwHqGv7yMw6UQ5IkyBAWsb9x649qf-_o=" class="card-img-top mt-3" alt="...">
+        <div class="card-body">
+            <h5 class="card-title">Nom trick</h5>
+            <div class="d-flex align-items-center justify-content-between">
+                <a href="#" class="btn btn-primary">On y va</a>
+                <div class="d-flex align-items-center">
+                    <a href="#" class="mx-4"><i class="bi bi-pencil"></i></a>
+                    <a href="#"><i class="bi bi-trash-fill"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+</div>
+
+</section>
+
 {% endblock %}

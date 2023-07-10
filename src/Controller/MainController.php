@@ -10,7 +10,9 @@ class MainController extends AbstractController {
 
     #[Route('/', name:'main')]
     public function index(){
-        return $this->render('main.html.twig');
+        return $this->render('main.html.twig', [
+            'test' => 'Un texte de démo'
+        ]);
     }
 
     #[Route('/signin', name:'signin')]
