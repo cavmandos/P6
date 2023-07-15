@@ -2,7 +2,11 @@
 
 namespace App\Controller;
 
+use App\Entity\User;
+use App\Form\UserType;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[Route(name: 'app_')]
@@ -15,14 +19,16 @@ class MainController extends AbstractController {
         ]);
     }
 
-    #[Route('/signin', name:'signin')]
-    public function signIn(){
-        return $this->render('user/signin.html.twig');
-    }
-
     #[Route('/signup', name:'signup')]
-    public function signUp(){
-        return $this->render('user/signup.html.twig');
+    public function signUp(Request $request, EntityManagerInterface $manager){
+
+        $user = new User();
+        $form = $this->createForm(UserType::class, $user);
+        $form->handleRequest($request);
+
+        return $this->render('user/signup.html.twig', [
+            'form' => $form->createView()
+        ]);
     }
 
     #[Route('/forgot', name:'forgot')]

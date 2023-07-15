@@ -1,0 +1,42 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+  SnowTricks | Se connecter
+{% endblock %}
+
+{% block container %}
+  {% if error %}
+    <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+  {% endif %}
+
+  <div id="login-page" class="d-flex flex-column justify-content-center align-items-center">
+
+  <h1 class="text-center mt-4">Se connecter</h1>
+  <div class="text-center">
+    <img src="/pictures/icon-snowboard.png" alt="Icône de snow" height="70px">
+  </div>
+
+  <div class="container">
+    <div class="row justify-content-center">
+      <form class="col-11 col-md-8 col-lg-4 my-3" method="post" action="{{ path('app_login') }}">
+        <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}" />
+
+        <div class="form-group mb-3">
+          <label for="username">Pseudo</label>
+          <input type="text" id="username" name="_username" class="form-control" required />
+        </div>
+
+        <div class="form-group mb-4">
+          <label for="password">Mot de passe</label>
+          <input type="password" id="password" name="_password" class="form-control" required />
+        </div>
+
+        <p class="text-center">
+            <button type="submit" class="btn btn-primary">Se connecter</button>
+        </p>
+      </form>
+    </div>
+  </div>
+
+  </div>
+{% endblock %}

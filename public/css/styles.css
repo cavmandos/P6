@@ -10903,3 +10903,7 @@ header.masthead .masthead-content .masthead-subheading {
     font-size: 4rem;
   }
 }
+
+#login-page {
+  height: 90vh;
+}

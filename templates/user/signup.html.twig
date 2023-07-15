@@ -1,7 +1,45 @@
 {% extends 'base.html.twig' %}
 
+{% block title %}
+  SnowTricks | Créer un compte
+{% endblock %}
+
 {% block container %}
-<div class="container">
-    <h1>Créer un compte</h1>
+
+<div id="login-page" class="d-flex flex-column justify-content-center align-items-center">
+
+<h1 class="text-center mt-4">Nouveau compte</h1>
+<div class="text-center">
+    <img src="/pictures/add-account-logo.jpeg" alt="Nouveau compte" height="60px">
+  </div>
+
+<div class="row mt-5 col-11 col-md-8 col-lg-4 my-3">
+
+        {{ form_start(form) }}
+        <div class="mb-3">
+            <div class="form-group">
+                {{ form_widget(form.username) }}
+            </div>
+        </div>
+        <div class="mb-3">
+            <div class="form-group">
+                {{ form_widget(form.email) }}
+            </div>
+        </div>
+        <div class="mb-4">
+            <div class="form-group">
+                {{ form_widget(form.password) }}
+            </div>
+        </div>
+
+        <p class="text-center">
+            <button class="btn btn-primary" type="submit">Créer le compte</button>
+        </p>
+
+        {{ form_end(form) }}
+        
+    </div>
+
 </div>
+
 {% endblock %}
