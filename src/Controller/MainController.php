@@ -32,12 +32,21 @@ class MainController extends AbstractController {
     }
 
     #[Route('/forgot', name:'forgot')]
-    public function forgot(){
+    public function forgot(Request $request){
+
+        if ($request->isMethod('POST')) {
+            dd("Envoi email :-)");
+        }
+
         return $this->render('user/forgot.html.twig');
     }
 
     #[Route('/new-password', name:'new-password')]
-    public function newPassword(){
+    public function newPassword(Request $request){
+
+        if ($request->isMethod('POST')) {
+            dd("Mot de passe changé :-)");
+        }
         return $this->render('user/new-password.html.twig');
     }
 

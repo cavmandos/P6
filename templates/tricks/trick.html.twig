@@ -1,7 +1,55 @@
 {% extends 'base.html.twig' %}
 
 {% block container %}
-<div class="container">
-    <h1>Page du trick {{ name }}</h1>
-</div>
+  <div class="bg-image d-flex justify-content-center align-items-center" style="
+    background-image: url('https://coresites-cdn-adm.imgix.net/whitelines_new/wp-content/uploads/2021/10/DHiYRLVs.jpeg?fit=crop');
+    height: 400px;
+    background-repeat: no-repeat;
+    background-size: cover;
+  ">
+    <div style="
+    background-color: black;
+  opacity: 0.7;
+  ">
+      <h1 class="masthead-heading mb-0 px-2 py-1 text-light">Trick : {{ name }}</h1>
+    </div>
+
+    <button class="btn btn-info" style="position: absolute; top: 80px; right: 10px;"><i class="bi bi-trash"></i></button>
+    <button class="btn btn-primary" style="position: absolute; top: 80px; right: 65px;"><i class="bi bi-pencil"></i></button>
+
+  </div>
+
+  <section class="bg-dark">
+    <!-- MEDIAS LIST -->
+    <div class="container py-5">
+      <div class="row justify-content-around">
+        {% for item in medias %}
+          {% set isIframe = item starts with 'https://www.youtube.com/' %}
+          <div class="col-10 col-md-4 col-lg-4 mb-4 mb-md-0">
+            <div class="d-flex justify-content-center media-container">
+              {% if isIframe %}
+                <div class="embed-responsive embed-responsive-16by9 media-element rounded">
+                  <iframe class="embed-responsive-item" src="{{ item }}" frameborder="0" allowfullscreen></iframe>
+                </div>
+              {% else %}
+                <img src="{{ item }}" alt="Media" class="img-fluid media-element rounded" />
+              {% endif %}
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+
+  <article class="container my-5">
+    <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Voluptatum quasi asperiores in quam, earum veniam eligendi ratione vero ducimus id itaque reiciendis nihil? Aliquid quod, accusamus sunt nemo sequi sit!</p>
+    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Corporis eveniet, accusantium velit, sunt fuga deleniti libero voluptates provident aut voluptatum, ut iusto. Unde, iure. Fugit perferendis vel illo nihil molestiae? Lorem ipsum dolor sit amet consectetur adipisicing elit. Consequuntur minus, exercitationem, adipisci tempore provident alias ducimus ex rerum ab, fugiat commodi! Nam eius animi beatae tenetur harum tempore perferendis modi.</p>
+    <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Fuga autem saepe dolores adipisci eum reprehenderit aliquid officiis laboriosam libero perferendis illo harum tenetur accusamus, asperiores vero quia odit veritatis consequuntur?</p>
+
+    <ul class="d-flex flex-column flex-md-row align-items-center justify-content-center list-unstyled">
+      <li class="badge text-bg-primary p-2 m-2">Créé le 12/06/23</li>
+      <li class="badge text-bg-info p-2 m-2">Catégorie : GRIND</li>
+      <li class="badge text-bg-primary p-2 m-2">Mis à jour le 25/06/23</li>
+    </ul>
+  </article>
 {% endblock %}
