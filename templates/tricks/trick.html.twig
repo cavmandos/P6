@@ -16,13 +16,15 @@
 
     <button class="btn btn-info" style="position: absolute; top: 80px; right: 10px;"><i class="bi bi-trash"></i></button>
     <button class="btn btn-primary" style="position: absolute; top: 80px; right: 65px;"><i class="bi bi-pencil"></i></button>
-
   </div>
 
   <section class="bg-dark">
     <!-- MEDIAS LIST -->
     <div class="container py-5">
-      <div class="row justify-content-around">
+      <p class="mb-0 text-center d-md-none margin-play">
+        <button class="btn btn-primary btn-show-images">Afficher les médias</button>
+      </p>
+      <div class="row justify-content-around media-row d-md-flex d-none">
         {% for item in medias %}
           {% set isIframe = item starts with 'https://www.youtube.com/' %}
           <div class="col-10 col-md-4 col-lg-4 mb-4 mb-md-0">
