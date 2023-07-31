@@ -46,7 +46,20 @@ class TricksController extends AbstractController {
 
     #[Route('/update-{name}', name:'trick_update')]
     public function update($name){
+
+        $images = [
+            "https://oppq.qc.ca/wp-content/uploads/Snowboard-programme-pour-vous-echauffer.jpg",
+            "https://img.olympicchannel.com/images/image/private/t_social_share_thumb/f_auto/primary/vqys54onceefbza1qu9p"
+        ];
+
+        $videos = [
+            "https://www.youtube.com/embed/EzGPmg4fFL8",
+        ];
+
+        $medias = array_merge($images, $videos);
+
         return $this->render('tricks/update.html.twig', [
+            'medias' => $medias,
             'name' => $name
         ]);
     }

@@ -9,7 +9,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 #[Route(name: 'app_')]
-class SecurityControController extends AbstractController
+class SecurityController extends AbstractController
 {
     #[Route('/login', name: 'login')]
     public function index(Request $request, AuthenticationUtils $authenticationUtils): Response

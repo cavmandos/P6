@@ -1,0 +1,19 @@
+{% for message in app.flashes('success') %}
+<div class="row justify-content-center mt-3">
+<div class="col-12">
+    <div class="alert alert-success text-center" role="alert">
+            {{ message|raw }}
+        </div>
+</div>
+</div>
+{% endfor %}
+
+{% for message in app.flashes('error') %}
+<div class="row justify-content-center mt-3">
+<div class="col-12">
+    <div class="alert alert-danger text-center" role="alert">
+            {{ message|raw }}
+        </div>
+</div>
+</div>
+{% endfor %}

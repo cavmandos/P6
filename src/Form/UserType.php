@@ -26,7 +26,7 @@ class UserType extends AbstractType
                 'attr' => ['class' => 'form-control', 'placeholder' => "Votre mot de passe"]
             ])
             ->add('avatar', HiddenType::class, [
-                'data' => 'prévoir une image par défaut'
+                'data' => 'https://w7.pngwing.com/pngs/178/595/png-transparent-user-profile-computer-icons-login-user-avatars-thumbnail.png'
             ])
             ->add('token', HiddenType::class, [
                 'data' => 'standby'
