@@ -22,47 +22,16 @@ class MainController extends AbstractController {
     }
 
     #[Route('/signup', name:'signup')]
-    public function signUp(Request $request, UserPasswordHasherInterface $passwordHasher, ValidatorInterface $validator, EntityManagerInterface $entityManager){
+    public function signUp(Request $request, UserPasswordHasherInterface $passwordHasher, ValidatorInterface $validator, EntityManagerInterface $entityManager) {
+        
+        $user = $this->createUser($request, $passwordHasher, $validator, $entityManager);
 
-        $user = new User();
-        $form = $this->createForm(UserType::class, $user);
-        $form->handleRequest($request);
-
-
-        if($form->isSubmitted()) {
-            $errors = $validator->validate($user);
-
-            $existingUser = $entityManager->getRepository(User::class)->findOneBy(['username' => $user->getUsername()]);
-            if ($existingUser) {
-                $this->addFlash('error', 'Un utilisateur avec le même nom existe déjà.');
-                return $this->redirectToRoute('app_signup');
-            }
-
-            $existingUserByEmail = $entityManager->getRepository(User::class)->findOneBy(['email' => $user->getEmail()]);
-            if ($existingUserByEmail) {
-                $this->addFlash('error', 'Un utilisateur avec le même email existe déjà.');
-                return $this->redirectToRoute('app_signup');
-            }
-
-            if($errors->count() <= 0) {
-                $user->setPassword($passwordHasher->hashPassword($user, $user->getPassword()));
-
-                $entityManager->persist($user);
-                $entityManager->flush();
-
-                $this->addFlash('success','Félicitation Rider ! Vous allez recevoir un email pour valider votre inscription.');
-                return $this->redirectToRoute('app_login');
-
-            } else {
-                foreach ($errors as $violation) {
-                    $this->addFlash('error', $violation->getMessage());
-                }
-            }
+        if ($user !== null) {
+            return $this->redirectToRoute('app_login');
         }
 
-
         return $this->render('user/signup.html.twig', [
-            'form' => $form->createView()
+            'form' => $this->createForm(UserType::class, $user)->createView()
         ]);
     }
 
@@ -84,5 +53,51 @@ class MainController extends AbstractController {
         }
         return $this->render('user/new-password.html.twig');
     }
+
+    private function checkExistingUser(User $user, EntityManagerInterface $entityManager): bool {
+        $existingUser = $entityManager->getRepository(User::class)->findOneBy(['username' => $user->getUsername()]);
+        if ($existingUser) {
+            $this->addFlash('error', 'Un utilisateur avec le même nom existe déjà.');
+            return true;
+        }
+
+        $existingUserByEmail = $entityManager->getRepository(User::class)->findOneBy(['email' => $user->getEmail()]);
+        if ($existingUserByEmail) {
+            $this->addFlash('error', 'Un utilisateur avec le même email existe déjà.');
+            return true;
+        }
+
+        return false;
+    }
+
+        private function createUser(Request $request, UserPasswordHasherInterface $passwordHasher, ValidatorInterface $validator, EntityManagerInterface $entityManager): ?User {
+        $user = new User();
+        $form = $this->createForm(UserType::class, $user);
+        $form->handleRequest($request);
+    
+        if (!$form->isSubmitted()) {
+            return null;
+        }
+    
+        $errors = $validator->validate($user);
+        if ($this->checkExistingUser($user, $entityManager)) {
+            return null;
+        }
+    
+        if ($errors->count() > 0) {
+            foreach ($errors as $violation) {
+                $this->addFlash('error', $violation->getMessage());
+            }
+            return null;
+        } else {
+            $user->setPassword($passwordHasher->hashPassword($user, $user->getPassword()));
+            $entityManager->persist($user);
+            $entityManager->flush();
+            $this->addFlash('success', 'Félicitation Rider ! Vous allez recevoir un email pour valider votre inscription.');
+            return $user;
+        }
+        
+    }
+    
 
 }
