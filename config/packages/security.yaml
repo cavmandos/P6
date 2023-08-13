@@ -7,7 +7,7 @@ security:
         my_provider:
             entity:
                 class: App\Entity\User
-                property: email
+                property: username
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
@@ -18,13 +18,13 @@ security:
             form_login:
                 login_path: app_login
                 check_path: app_login
-                default_target_path: app_home
+                default_target_path: app_main
 
             provider: my_provider
 
             logout:
                 path: app_logout
-                target: app_home
+                target: app_main
 
             # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#the-firewall

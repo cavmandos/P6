@@ -28,9 +28,7 @@ class UserType extends AbstractType
             ->add('avatar', HiddenType::class, [
                 'data' => 'https://w7.pngwing.com/pngs/178/595/png-transparent-user-profile-computer-icons-login-user-avatars-thumbnail.png'
             ])
-            ->add('token', HiddenType::class, [
-                'data' => 'standby'
-            ])
+            ->add('token', HiddenType::class)
         ;
     }
 

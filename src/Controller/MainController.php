@@ -4,12 +4,18 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Form\UserType;
+use App\Service\MailerService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
+use Symfony\Component\Security\Csrf\TokenGenerator\TokenGeneratorInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+
+use App\Repository\UserRepository;
 
 #[Route(name: 'app_')]
 class MainController extends AbstractController {
@@ -22,9 +28,9 @@ class MainController extends AbstractController {
     }
 
     #[Route('/signup', name:'signup')]
-    public function signUp(Request $request, UserPasswordHasherInterface $passwordHasher, ValidatorInterface $validator, EntityManagerInterface $entityManager) {
+    public function signUp(Request $request, UserPasswordHasherInterface $passwordHasher, ValidatorInterface $validator, EntityManagerInterface $entityManager, MailerService $mailerService, TokenGeneratorInterface $tokenGeneratorInterface) {
         
-        $user = $this->createUser($request, $passwordHasher, $validator, $entityManager);
+        $user = $this->createUser($request, $passwordHasher, $validator, $entityManager, $mailerService, $tokenGeneratorInterface);
 
         if ($user !== null) {
             return $this->redirectToRoute('app_login');
@@ -54,6 +60,21 @@ class MainController extends AbstractController {
         return $this->render('user/new-password.html.twig');
     }
 
+    #[Route('/verify/{token}/{id<\d+>}', name: 'verify', methods: ['GET'])]
+    public function verify(string $token, int $id, UserRepository $userRepository): Response
+    {
+        $user = $userRepository->find($id);
+
+        if (!$user) {
+            throw new AccessDeniedException();
+        }
+
+        $userRepository->verifyUser($token, $user);
+
+        $this->addFlash('success', 'Votre compte est maintenant activé ! GO RIDE !');
+        return $this->redirectToRoute('app_login');
+    }
+
     private function checkExistingUser(User $user, EntityManagerInterface $entityManager): bool {
         $existingUser = $entityManager->getRepository(User::class)->findOneBy(['username' => $user->getUsername()]);
         if ($existingUser) {
@@ -70,7 +91,7 @@ class MainController extends AbstractController {
         return false;
     }
 
-        private function createUser(Request $request, UserPasswordHasherInterface $passwordHasher, ValidatorInterface $validator, EntityManagerInterface $entityManager): ?User {
+        private function createUser(Request $request, UserPasswordHasherInterface $passwordHasher, ValidatorInterface $validator, EntityManagerInterface $entityManager, MailerService $mailerService, TokenGeneratorInterface $tokenGeneratorInterface): ?User {
         $user = new User();
         $form = $this->createForm(UserType::class, $user);
         $form->handleRequest($request);
@@ -91,8 +112,23 @@ class MainController extends AbstractController {
             return null;
         } else {
             $user->setPassword($passwordHasher->hashPassword($user, $user->getPassword()));
+
+            $token = $tokenGeneratorInterface->generateToken();
+            $user->setToken($token);
+
             $entityManager->persist($user);
             $entityManager->flush();
+
+            $mailerService->send(
+                $user->getEmail(),
+                'Confirmation du compte',
+                'registration.html.twig',
+                [
+                    'user' => $user,
+                    'token' => $token
+                ]
+            );
+
             $this->addFlash('success', 'Félicitation Rider ! Vous allez recevoir un email pour valider votre inscription.');
             return $user;
         }

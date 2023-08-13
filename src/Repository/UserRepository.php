@@ -39,6 +39,17 @@ class UserRepository extends ServiceEntityRepository
         }
     }
 
+    public function verifyUser(string $token, User $user)
+    {
+        if ($user->getToken() === $token) {
+            $user->setIsVerified(true);
+            $user->setToken(null);
+
+            $entityManager = $this->getEntityManager();
+            $entityManager->flush();
+        }
+    }
+
 //    /**
 //     * @return User[] Returns an array of User objects
 //     */
