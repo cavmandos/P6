@@ -8,6 +8,9 @@
 
   <div id="login-page" class="d-flex flex-column justify-content-center align-items-center">
   {% include "includes/_alerts.html.twig" %}
+  {% if error %}
+    <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+  {% endif %}
   <h1 class="text-center mt-4">Se connecter</h1>
   <div class="text-center">
     <img src="/pictures/icon-snowboard.png" alt="Icône de snow" height="70px">

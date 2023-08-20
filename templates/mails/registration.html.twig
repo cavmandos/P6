@@ -1,8 +1,8 @@
 <h1>Confirmation de votre compte SNOWTRICKS</h1>
 
-<p>Cher/chère {{ user.username }}</p>
+<p> {{ user.username }} !</p>
 
-<p>Pour finaliser votre inscription, veuillez cliquer sur le lien pour activer votre compte.</p>
+<p>Pour finaliser votre inscription, veuillez cliquer sur le lien pour activer votre compte</p>
 
 <p><a href={{ absolute_url(path('app_verify', {token: token, id: user.id})) }}>Activer mon compte</a></p>
 
