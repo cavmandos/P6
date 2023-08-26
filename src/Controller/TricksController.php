@@ -25,7 +25,11 @@ class TricksController extends AbstractController {
     }
 
     #[Route('/tricks/{name}', name:'trick_show')]
-    public function show($name){
+    public function show($name, EntityManagerInterface $entityManager){
+
+        $trick = $entityManager->getRepository(Trick::class)->findOneBy([
+            'name' => $name
+        ]);
 
         $images = [
             "https://oppq.qc.ca/wp-content/uploads/Snowboard-programme-pour-vous-echauffer.jpg",
@@ -39,6 +43,7 @@ class TricksController extends AbstractController {
         $medias = array_merge($images, $videos);
 
         return $this->render('tricks/trick.html.twig', [
+            'trick' => $trick,
             'medias' => $medias,
             'name' => $name
         ]);

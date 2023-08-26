@@ -2,7 +2,9 @@
 
 namespace App\Entity;
 
+use App\Entity\Group;
 use App\Repository\TrickRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -18,22 +20,25 @@ class Trick
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
-    #[ORM\Column]
-    private ?int $groupId = null;
+    #[ORM\ManyToOne(targetEntity: Group::class, inversedBy: 'tricks')]
+    private ?Group $groupId = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(type: 'text', length: 65535)]
     private ?string $description = null;
 
-    #[ORM\Column]
-    private ?int $userId = null;
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'tricks')]
+    private ?User $userId = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $lastUpdate = null;
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    private ?\DateTimeInterface $lastUpdate = null;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Media", mappedBy="trick", cascade={"persist"})
      */
     private $medias;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    private ?\DateTimeInterface $published = null;
 
     public function __construct()
     {
@@ -57,12 +62,12 @@ class Trick
         return $this;
     }
 
-    public function getGroupId(): ?int
+    public function getGroupId(): ?Group
     {
         return $this->groupId;
     }
 
-    public function setGroupId(int $groupId): static
+    public function setGroupId($groupId): static
     {
         $this->groupId = $groupId;
 
@@ -81,26 +86,38 @@ class Trick
         return $this;
     }
 
-    public function getUserId(): ?int
+    public function getUserId(): ?User
     {
         return $this->userId;
     }
 
-    public function setUserId(int $userId): static
+    public function setUserId($userId): static
     {
         $this->userId = $userId;
 
         return $this;
     }
 
-    public function getLastUpdate(): ?string
+    public function getLastUpdate(): ?\DateTimeInterface
     {
         return $this->lastUpdate;
     }
 
-    public function setLastUpdate(string $lastUpdate): static
+    public function setLastUpdate(\DateTimeInterface $lastUpdate): static
     {
         $this->lastUpdate = $lastUpdate;
+
+        return $this;
+    }
+
+    public function getPublished(): ?\DateTimeInterface
+    {
+        return $this->published;
+    }
+
+    public function setPublished(\DateTimeInterface $published): static
+    {
+        $this->published = $published;
 
         return $this;
     }

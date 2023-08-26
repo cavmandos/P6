@@ -24,12 +24,13 @@
 <section class="my-3">
 <div class="container">
 <div id="repere" class="row d-flex justify-content-center justify-content-lg-start">
-<div class="card col-11 col-md-4 col-lg-3 m-2">
+    {% for trick in tricks %}
+    <div class="card col-11 col-md-4 col-lg-3 m-2">
         <img src="https://media.istockphoto.com/id/959512078/fr/photo/jeune-fille-effectue-des-sauts-avec-snowboard.jpg?s=612x612&w=0&k=20&c=2jgS-MMmTE6IwHqGv7yMw6UQ5IkyBAWsb9x649qf-_o=" class="card-img-top mt-3" alt="...">
         <div class="card-body">
-            <h5 class="card-title">Nom trick</h5>
+            <h5 class="card-title">{{ trick.name }}</h5>
             <div class="d-flex align-items-center justify-content-between">
-                <a href={{ path('app_trick_show', {name:"Titi"}) }} class="btn btn-primary">On y va</a>
+                <a href={{ path('app_trick_show', {name: trick.name}) }} class="btn btn-primary">On y va</a>
                 <div class="d-flex align-items-center">
                     <a href="#" class="mx-4"><i class="bi bi-pencil"></i></a>
                     <a href="#"><i class="bi bi-trash-fill"></i></a>
@@ -37,9 +38,9 @@
             </div>
         </div>
     </div>
+    {% endfor %}
 </div>
 </div>
-
 </section>
 
 {% endblock %}

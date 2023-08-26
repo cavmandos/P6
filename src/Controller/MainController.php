@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Trick;
 use App\Entity\User;
 use App\Form\UserType;
 use App\Service\MailerService;
@@ -21,9 +22,12 @@ use App\Repository\UserRepository;
 class MainController extends AbstractController {
 
     #[Route('/', name:'main')]
-    public function index(){
+    public function index(EntityManagerInterface $entityManager){
+
+        $tricks = $entityManager->getRepository(Trick::class)->findAll();
+
         return $this->render('main.html.twig', [
-            'test' => 'Un texte de démo'
+            'tricks' => $tricks
         ]);
     }
 
