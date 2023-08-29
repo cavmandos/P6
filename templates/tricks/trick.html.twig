@@ -13,9 +13,10 @@
   ">
       <h1 class="masthead-heading mb-0 px-2 py-1 text-light">Trick : {{ trick.name }}</h1>
     </div>
-
-    <button class="btn btn-info" style="position: absolute; top: 80px; right: 10px;"><i class="bi bi-trash"></i></button>
-    <button class="btn btn-primary" style="position: absolute; top: 80px; right: 65px;"><i class="bi bi-pencil"></i></button>
+    {% if app.user %}
+      <button class="btn btn-info" style="position: absolute; top: 80px; right: 10px;"><i class="bi bi-trash"></i></button>
+      <button class="btn btn-primary" style="position: absolute; top: 80px; right: 65px;"><i class="bi bi-pencil"></i></button>
+    {% endif %}
   </div>
 
   <section class="bg-dark">
@@ -26,15 +27,14 @@
       </p>
       <div class="row justify-content-around media-row d-md-flex d-none">
         {% for item in medias %}
-          {% set isIframe = item starts with 'https://www.youtube.com/' %}
           <div class="col-10 col-md-4 col-lg-4 mb-4 mb-md-0">
             <div class="d-flex justify-content-center media-container">
-              {% if isIframe %}
+              {% if item['type'] == "video" %}
                 <div class="embed-responsive embed-responsive-16by9 media-element rounded">
-                  <iframe class="embed-responsive-item" src="{{ item }}" frameborder="0" allowfullscreen></iframe>
+                  <iframe class="embed-responsive-item" src="{{ item['source'] }}" frameborder="0" allowfullscreen></iframe>
                 </div>
               {% else %}
-                <img src="{{ item }}" alt="Media" class="img-fluid media-element rounded" />
+                <img src="{{ item['source'] }}" alt="Media" class="img-fluid media-element rounded" />
               {% endif %}
             </div>
           </div>

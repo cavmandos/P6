@@ -13,8 +13,8 @@ class Media
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column]
-    private ?int $trickId = null;
+    #[ORM\ManyToOne(targetEntity: Trick::class, inversedBy: 'medias')]
+    private ?Trick $trickId = null;
 
     #[ORM\Column(length: 255)]
     private ?string $type = null;
@@ -32,7 +32,7 @@ class Media
         return $this->trickId;
     }
 
-    public function setTrickId(int $trickId): static
+    public function setTrickId($trickId): static
     {
         $this->trickId = $trickId;
 

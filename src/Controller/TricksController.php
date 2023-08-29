@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Media;
 use App\Entity\Trick;
 use App\Form\TrickType;
 use Doctrine\ORM\EntityManagerInterface;
@@ -31,16 +32,19 @@ class TricksController extends AbstractController {
             'name' => $name
         ]);
 
-        $images = [
-            "https://oppq.qc.ca/wp-content/uploads/Snowboard-programme-pour-vous-echauffer.jpg",
-            "https://img.olympicchannel.com/images/image/private/t_social_share_thumb/f_auto/primary/vqys54onceefbza1qu9p"
-        ];
+        $images = $entityManager->getRepository(Media::class)->findBy([
+            'trickId' => $trick->getId()
+        ]);
 
-        $videos = [
-            "https://www.youtube.com/embed/EzGPmg4fFL8",
-        ];
+        $medias = [];
 
-        $medias = array_merge($images, $videos);
+        foreach ($images as $image) {
+            $image = array(
+                'source'  => $image->getUrl(),
+                'type' => $image->getType()
+            );
+            array_push($medias, $image);
+        }
 
         return $this->render('tricks/trick.html.twig', [
             'trick' => $trick,
