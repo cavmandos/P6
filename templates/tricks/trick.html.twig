@@ -30,9 +30,16 @@
           <div class="col-10 col-md-4 col-lg-4 mb-4 mb-md-0">
             <div class="d-flex justify-content-center media-container">
               {% if item['type'] == "video" %}
+              {% set youtube = item['source']starts with 'https://www.youtube.com/' %}
+                {% if youtube %}
+                  <div class="embed-responsive embed-responsive-16by9 media-element rounded">
+                    <iframe class="embed-responsive-item" src="{{ item['source'] }}" frameborder="0" allowfullscreen></iframe>
+                  </div>
+                {% else %}
                 <div class="embed-responsive embed-responsive-16by9 media-element rounded">
-                  <iframe class="embed-responsive-item" src="{{ item['source'] }}" frameborder="0" allowfullscreen></iframe>
+                  <iframe frameborder="0" type="text/html" src="https://www.dailymotion.com/embed/video/{{ item['source'] }}" title="Dailymotion Video Player"> </iframe> 
                 </div>
+                {% endif %}
               {% else %}
                 <img src="{{ item['source'] }}" alt="Media" class="img-fluid media-element rounded" />
               {% endif %}

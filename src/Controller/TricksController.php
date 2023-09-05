@@ -20,6 +20,37 @@ class TricksController extends AbstractController {
         $form = $this->createForm(TrickType::class, $trick);
         $form->handleRequest($request);
 
+        if($form->isSubmitted() && $form->isValid()){
+            $now = new \DateTime();
+            $trick->setPublished($now);
+            $trick->setLastUpdate($now);
+
+            if (!empty($form->get('medias')->getData())) {
+                $media = new Media();
+                $media->setTrickId($trick);
+
+                $mediaUrl = $form->get('medias')->getData();
+                $fileExtension = pathinfo($mediaUrl, PATHINFO_EXTENSION);
+                
+                $imageExtensions = ['jpg', 'jpeg', 'png', 'gif'];
+                if (in_array(strtolower($fileExtension), $imageExtensions)) {
+                    $media->setType('image');
+                } else {
+                    $media->setType('video');
+                }
+
+                $media->setUrl($form->get('medias')->getData());
+                $manager->persist($media);
+            }
+
+            $manager->persist($trick);
+            $manager->flush();
+
+            $this->addFlash('success', "Félicitations, vous avez créé le trick : ".$trick->getName());
+
+            return $this->redirectToRoute('app_main');
+        }
+
         return $this->render('tricks/create.html.twig', [
             'form' => $form->createView()
         ]);

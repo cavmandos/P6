@@ -2,7 +2,10 @@
 
 namespace App\Form;
 
+use App\Entity\Group;
 use App\Entity\Trick;
+use App\Entity\User;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
@@ -19,27 +22,24 @@ class TrickType extends AbstractType
             ->add('name', TextType::class, [
                 'attr' => ['class' => 'form-control', 'placeholder' => 'ex : Method']
             ])
-            ->add('groupId', ChoiceType::class, [
-                'attr' => ['class' => 'form-select'],
+            ->add('groupId', EntityType::class, [
                 'label' => 'Choisissez une option',
-                'choices' => [
-                    'Grabs' => 'option1',
-                    'Flips' => 'option2',
-                    'Rails et Jibs' => 'option3',
-                    'Spins' => 'option4',
-                ],
+                'class' => Group::class,
+                'choice_label' => 'name',
+                'attr' => ['class' => 'form-select'],
                 'expanded' => false,
                 'multiple' => false,
             ])
             ->add('description', TextareaType::class, [
                 'attr' => ['class' => 'form-control', 'rows' => 5, 'placeholder' => 'ex : Un Method est un grab, pas une cuisine Ikea...']
             ])
-            ->add('userId', HiddenType::class, [
-                'data' => 'id de la personne'
+            ->add('userId', EntityType::class, [
+                'class' => User::class,
+                'choice_label' => 'username',
+                'attr' => ['class' => 'form-control'],
+                'label' => 'Utilisateur',
             ])
-            ->add('lastUpdate', HiddenType::class, [
-                'data' => 'derniere mise à jour'
-            ])
+            
 
             // For medias
             ->add('medias', TextType::class, [
