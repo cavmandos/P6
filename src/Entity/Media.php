@@ -22,6 +22,9 @@ class Media
     #[ORM\Column(length: 255)]
     private ?string $url = null;
 
+    #[ORM\Column]
+    private ?bool $banner = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -59,6 +62,18 @@ class Media
     public function setUrl(string $url): static
     {
         $this->url = $url;
+
+        return $this;
+    }
+
+    public function isBanner(): ?bool
+    {
+        return $this->banner;
+    }
+
+    public function setBanner(bool $banner): static
+    {
+        $this->banner = $banner;
 
         return $this;
     }

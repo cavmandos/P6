@@ -10,11 +10,13 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
+use Symfony\Component\Security\Core\Security;
+
 #[Route(name: 'app_')]
 class TricksController extends AbstractController {
 
     #[Route('/create', name:'create')]
-    public function create(Request $request, EntityManagerInterface $manager){
+    public function create(Request $request, EntityManagerInterface $manager,){
 
         $trick = new Trick();
         $form = $this->createForm(TrickType::class, $trick);
@@ -24,6 +26,8 @@ class TricksController extends AbstractController {
             $now = new \DateTime();
             $trick->setPublished($now);
             $trick->setLastUpdate($now);
+            $user = $this->security->getUser();
+            $trick->setUserId($user);
 
             if (!empty($form->get('medias')->getData())) {
                 $media = new Media();
@@ -32,9 +36,10 @@ class TricksController extends AbstractController {
                 $mediaUrl = $form->get('medias')->getData();
                 $fileExtension = pathinfo($mediaUrl, PATHINFO_EXTENSION);
                 
-                $imageExtensions = ['jpg', 'jpeg', 'png', 'gif'];
+                $imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
                 if (in_array(strtolower($fileExtension), $imageExtensions)) {
                     $media->setType('image');
+                    $media->setBanner(true);
                 } else {
                     $media->setType('video');
                 }
@@ -72,7 +77,8 @@ class TricksController extends AbstractController {
         foreach ($images as $image) {
             $image = array(
                 'source'  => $image->getUrl(),
-                'type' => $image->getType()
+                'type' => $image->getType(),
+                'banner'=> $image->isBanner()
             );
             array_push($medias, $image);
         }
@@ -102,6 +108,13 @@ class TricksController extends AbstractController {
             'medias' => $medias,
             'name' => $name
         ]);
+    }
+
+    private $security;
+
+    public function __construct(Security $security)
+    {
+        $this->security = $security;
     }
 
 }

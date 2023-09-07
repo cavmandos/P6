@@ -28,6 +28,7 @@ class Trick
     private ?string $description = null;
 
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'tricks')]
+    #[ORM\JoinColumn(nullable:false)]
     private ?User $userId = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
@@ -94,7 +95,7 @@ class Trick
         return $this->userId;
     }
 
-    public function setUserId($userId): static
+    public function setUserId(?User $userId): self
     {
         $this->userId = $userId;
 
