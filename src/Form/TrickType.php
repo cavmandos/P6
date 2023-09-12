@@ -11,6 +11,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Constraints\Url;
 
 class TrickType extends AbstractType
 {
@@ -30,17 +31,17 @@ class TrickType extends AbstractType
                 'multiple' => false,
             ])
             ->add('description', TextareaType::class, [
-                'attr' => ['class' => 'form-control', 'rows' => 5, 'placeholder' => 'ex : Un Method est un grab, pas une cuisine Ikea...']
+                'attr' => ['class' => 'form-control', 'rows' => 5, 'placeholder' => 'ex : Un Method est un grab, pas une cuisine Ikea...'],
+                'constraints' => [new NotBlank()],
             ])
 
-            // For medias
             ->add('medias', TextType::class, [
                 'attr' => ['class' => 'form-control', 'placeholder' => 'Votre url ici'],
                 'label' => 'URL du média (image ou vidéo)',
                 'required' => false,
                 'mapped' => false,
+                'constraints' => [new Url()],
             ])
-
         ;
     }
 

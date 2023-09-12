@@ -35,9 +35,7 @@ class Trick
     #[Assert\DateTime]
     private ?\DateTimeInterface $lastUpdate = null;
 
-    /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Media", mappedBy="trick", cascade={"persist"})
-     */
+    #[ORM\OneToMany(mappedBy: 'trickId', targetEntity: Media::class, orphanRemoval: true, cascade: ['persist', 'remove'])]
     private $medias;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]

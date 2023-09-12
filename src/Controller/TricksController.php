@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Media;
 use App\Entity\Trick;
 use App\Form\TrickType;
+use App\Repository\TrickRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -113,6 +114,15 @@ class TricksController extends AbstractController {
             'medias' => $medias,
             'name' => $name
         ]);
+    }
+
+    #[Route('/tricks/delete/{id}', name: 'trick_delete')]
+    public function deleteTrick($id, EntityManagerInterface $entityManager, TrickRepository $trickRepository)
+    {
+        $trick = $entityManager->getRepository(Trick::class)->findOneBy(['id' => $id]);
+        $trickRepository->remove($trick, true);
+        $this->addFlash('success', "So long ! Vous avez supprimé le trick : ".$trick->getName());
+        return $this->redirectToRoute('app_main');
     }
 
     private $security;

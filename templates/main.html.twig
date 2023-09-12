@@ -42,11 +42,11 @@
                     <div class="d-flex align-items-center">
                     {% if app.user %}
                         <a href="#" class="mx-4"><i class="bi bi-pencil"></i></a>
-                        <button type="button" class="btn btn-white p-0" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                        <button type="button" class="btn btn-white p-0" data-bs-toggle="modal" data-bs-target="#exampleModal-{{ trick.id }}">
                             <i class="bi bi-trash-fill"></i>
                         </button>
 
-                        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal fade" id="exampleModal-{{ trick.id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                         <div class="modal-dialog modal-dialog-centered">
                             <div class="modal-content">
                             <div class="modal-body">
@@ -54,7 +54,7 @@
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn" data-bs-dismiss="modal">Annuler</button>
-                                <a href="#"><button type="button" class="btn btn-primary">Supprimer</button></a>
+                                <a href="{{ path('app_trick_delete', {id: trick.id}) }}"><button type="button" class="btn btn-primary">Supprimer</button></a>
                             </div>
                             </div>
                         </div>
