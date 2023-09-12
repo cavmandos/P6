@@ -2,7 +2,14 @@
 
 {% block container %}
   <div class="bg-image d-flex justify-content-center align-items-center" style="
-    background-image: url('https://coresites-cdn-adm.imgix.net/whitelines_new/wp-content/uploads/2021/10/DHiYRLVs.jpeg?fit=crop');
+    background-image: url(
+      {% if trickbanner[trick.id] is not empty  %}
+        {% set bannerMedia = trickbanner[trick.id][0] %}
+        {{ bannerMedia.url }}
+      {% else %}
+        '/pictures/image-snowboard-banner.jpg'
+      {% endif %}
+    );
     height: 400px;
     background-repeat: no-repeat;
     background-size: cover;
@@ -14,8 +21,25 @@
       <h1 class="masthead-heading mb-0 px-2 py-1 text-light">Trick : {{ trick.name }}</h1>
     </div>
     {% if app.user %}
-      <button class="btn btn-info" style="position: absolute; top: 80px; right: 10px;"><i class="bi bi-trash"></i></button>
+      <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#exampleModal" style="position: absolute; top: 80px; right: 10px;">
+        <i class="bi bi-trash-fill"></i>
+      </button>
+
       <button class="btn btn-primary" style="position: absolute; top: 80px; right: 65px;"><i class="bi bi-pencil"></i></button>
+
+      <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                            <div class="modal-body">
+                                Hop hop hop ! Tu veux <b>VRAIMENT</b> supprimer ce trick ?
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn" data-bs-dismiss="modal">Annuler</button>
+                                <a href="#"><button type="button" class="btn btn-primary">Supprimer</button></a>
+                            </div>
+                            </div>
+                        </div>
+        </div>
     {% endif %}
   </div>
 

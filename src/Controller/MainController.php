@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Media;
 use App\Entity\Trick;
 use App\Entity\User;
 use App\Form\UserType;
@@ -26,8 +27,15 @@ class MainController extends AbstractController {
 
         $tricks = $entityManager->getRepository(Trick::class)->findAll();
 
+        $trickMedias = [];
+        foreach ($tricks as $trick) {
+            $media = $entityManager->getRepository(Media::class)->findBy(['trickId' => $trick, 'banner' => true]);
+            $trickMedias[$trick->getId()] = $media;
+        }
+
         return $this->render('main.html.twig', [
-            'tricks' => $tricks
+            'tricks' => $tricks,
+            'medias' => $trickMedias
         ]);
     }
 

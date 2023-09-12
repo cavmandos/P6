@@ -83,10 +83,15 @@ class TricksController extends AbstractController {
             array_push($medias, $image);
         }
 
+        $trickBanner = [];
+        $media = $entityManager->getRepository(Media::class)->findBy(['trickId' => $trick, 'banner' => true]);
+        $trickBanner[$trick->getId()] = $media;
+
         return $this->render('tricks/trick.html.twig', [
             'trick' => $trick,
             'medias' => $medias,
-            'name' => $name
+            'name' => $name,
+            'trickbanner' => $trickBanner
         ]);
     }
 
