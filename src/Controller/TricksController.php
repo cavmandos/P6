@@ -41,11 +41,14 @@ class TricksController extends AbstractController {
                 if (in_array(strtolower($fileExtension), $imageExtensions)) {
                     $media->setType('image');
                     $media->setBanner(true);
+                    $media->setUrl(strip_tags($mediaUrl));
                 } else {
                     $media->setType('video');
+                    $media->setBanner(false);
+                    $cleanedIframeCode = strip_tags($mediaUrl, '<iframe><div><style><p>');
+                    $media->setUrl($cleanedIframeCode);
                 }
-
-                $media->setUrl($form->get('medias')->getData());
+                
                 $manager->persist($media);
             }
 
@@ -65,28 +68,9 @@ class TricksController extends AbstractController {
     #[Route('/tricks/{name}', name:'trick_show')]
     public function show($name, EntityManagerInterface $entityManager){
 
-        $trick = $entityManager->getRepository(Trick::class)->findOneBy([
-            'name' => $name
-        ]);
-
-        $images = $entityManager->getRepository(Media::class)->findBy([
-            'trickId' => $trick->getId()
-        ]);
-
-        $medias = [];
-
-        foreach ($images as $image) {
-            $image = array(
-                'source'  => $image->getUrl(),
-                'type' => $image->getType(),
-                'banner'=> $image->isBanner()
-            );
-            array_push($medias, $image);
-        }
-
-        $trickBanner = [];
-        $media = $entityManager->getRepository(Media::class)->findBy(['trickId' => $trick, 'banner' => true]);
-        $trickBanner[$trick->getId()] = $media;
+        $trick = $entityManager->getRepository(Trick::class)->findOneBy(['name' => $name]);
+        $medias = $this->getMediasForTrick($trick, $entityManager);
+        $trickBanner = $this->getTrickBanner($trick, $entityManager);
 
         return $this->render('tricks/trick.html.twig', [
             'trick' => $trick,
@@ -130,6 +114,35 @@ class TricksController extends AbstractController {
     public function __construct(Security $security)
     {
         $this->security = $security;
+    }
+
+    private function getMediasForTrick(Trick $trick, EntityManagerInterface $entityManager): array
+    {
+        $images = $entityManager->getRepository(Media::class)->findBy(['trickId' => $trick->getId()]);
+        $medias = [];
+
+        foreach ($images as $image) {
+            $medias[] = $this->formatMedia($image);
+        }
+
+        return $medias;
+    }
+
+    private function getTrickBanner(Trick $trick, EntityManagerInterface $entityManager): array
+    {
+        $media = $entityManager->getRepository(Media::class)->findBy(['trickId' => $trick, 'banner' => true]);
+        $trickBanner[$trick->getId()] = $media;
+
+        return $trickBanner;
+    }
+
+    private function formatMedia(Media $media): array
+    {
+        return [
+            'source' => $media->getUrl(),
+            'type' => $media->getType(),
+            'banner' => $media->isBanner(),
+        ];
     }
 
 }

@@ -103,47 +103,47 @@ class MainController extends AbstractController {
         return false;
     }
 
-        private function createUser(Request $request, UserPasswordHasherInterface $passwordHasher, ValidatorInterface $validator, EntityManagerInterface $entityManager, MailerService $mailerService, TokenGeneratorInterface $tokenGeneratorInterface): ?User {
-        $user = new User();
-        $form = $this->createForm(UserType::class, $user);
-        $form->handleRequest($request);
+    private function createUser(Request $request, UserPasswordHasherInterface $passwordHasher, ValidatorInterface $validator, EntityManagerInterface $entityManager, MailerService $mailerService, TokenGeneratorInterface $tokenGeneratorInterface): ?User {
+    $user = new User();
+    $form = $this->createForm(UserType::class, $user);
+    $form->handleRequest($request);
     
-        if (!$form->isSubmitted()) {
-            return null;
-        }
+    if (!$form->isSubmitted()) {
+        return null;
+    }
     
-        $errors = $validator->validate($user);
-        if ($this->checkExistingUser($user, $entityManager)) {
+    $errors = $validator->validate($user);
+    if ($this->checkExistingUser($user, $entityManager)) {
             return null;
-        }
+    }
     
-        if ($errors->count() > 0) {
-            foreach ($errors as $violation) {
-                $this->addFlash('error', $violation->getMessage());
-            }
-            return null;
-        } else {
-            $user->setPassword($passwordHasher->hashPassword($user, $user->getPassword()));
-
-            $token = $tokenGeneratorInterface->generateToken();
-            $user->setToken($token);
-
-            $entityManager->persist($user);
-            $entityManager->flush();
-
-            $mailerService->send(
-                $user->getEmail(),
-                'Confirmation du compte',
-                'registration.html.twig',
-                [
-                    'user' => $user,
-                    'token' => $token
-                ]
-            );
-
-            $this->addFlash('success', 'Félicitation Rider ! Vous allez recevoir un email pour valider votre inscription.');
-            return $user;
+    if ($errors->count() > 0) {
+        foreach ($errors as $violation) {
+            $this->addFlash('error', $violation->getMessage());
         }
+        return null;
+    } else {
+        $user->setPassword($passwordHasher->hashPassword($user, $user->getPassword()));
+
+        $token = $tokenGeneratorInterface->generateToken();
+        $user->setToken($token);
+
+        $entityManager->persist($user);
+        $entityManager->flush();
+
+        $mailerService->send(
+            $user->getEmail(),
+            'Confirmation du compte',
+            'registration.html.twig',
+            [
+                'user' => $user,
+                'token' => $token
+            ]
+        );
+
+        $this->addFlash('success', 'Félicitation Rider ! Vous allez recevoir un email pour valider votre inscription.');
+        return $user;
+    }
         
     }
     

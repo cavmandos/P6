@@ -11,7 +11,6 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\NotBlank;
-use Symfony\Component\Validator\Constraints\Url;
 
 class TrickType extends AbstractType
 {
@@ -36,11 +35,10 @@ class TrickType extends AbstractType
             ])
 
             ->add('medias', TextType::class, [
-                'attr' => ['class' => 'form-control', 'placeholder' => 'Votre url ici'],
+                'attr' => ['class' => 'form-control', 'placeholder' => 'Votre url / iframe ici'],
                 'label' => 'URL du média (image ou vidéo)',
                 'required' => false,
                 'mapped' => false,
-                'constraints' => [new Url()],
             ])
         ;
     }

@@ -19,7 +19,7 @@ class Media
     #[ORM\Column(length: 255)]
     private ?string $type = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(type: 'text', length: 65535)]
     private ?string $url = null;
 
     #[ORM\Column]
