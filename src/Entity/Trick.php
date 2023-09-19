@@ -18,7 +18,10 @@ class Trick
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, unique: true)]
+    #[Assert\NotNull(
+        message: "Ton trick doit avoir un p'tit nom"
+    )]
     private ?string $name = null;
 
     #[ORM\ManyToOne(targetEntity: Group::class, inversedBy: 'tricks')]

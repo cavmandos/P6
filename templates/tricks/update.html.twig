@@ -2,7 +2,14 @@
 
 {% block container %}
 <div class="bg-image d-flex justify-content-center align-items-center" style="
-    background-image: url('https://coresites-cdn-adm.imgix.net/whitelines_new/wp-content/uploads/2021/10/DHiYRLVs.jpeg?fit=crop');
+    background-image: url(
+      {% if trickbanner[trick.id] is not empty  %}
+        {% set bannerMedia = trickbanner[trick.id][0] %}
+        {{ bannerMedia.url|raw }}
+      {% else %}
+        '/pictures/image-snowboard-banner.jpg'
+      {% endif %}
+    );
     height: 400px;
     background-repeat: no-repeat;
     background-size: cover;
@@ -13,10 +20,9 @@
   ">
       <h1 class="masthead-heading mb-0 px-2 py-1 text-light">Update : {{ name }}</h1>
     </div>
-
-    <button class="btn btn-info" style="position: absolute; top: 80px; right: 10px;"><i class="bi bi-trash"></i></button>
-    <button class="btn btn-primary" style="position: absolute; top: 80px; right: 65px;"><i class="bi bi-pencil"></i></button>
   </div>
+
+  {% include "includes/_alerts.html.twig" %}
 
   <section class="bg-dark">
     <!-- MEDIAS LIST -->
@@ -26,20 +32,21 @@
       </p>
       <div class="row justify-content-around media-row d-md-flex d-none">
         {% for item in medias %}
-          {% set isIframe = item starts with 'https://www.youtube.com/' %}
           <div class="col-10 col-md-4 col-lg-4 mb-4 mb-md-0">
             <div class="d-flex justify-content-center media-container">
-              {% if isIframe %}
-                <div class="embed-responsive embed-responsive-16by9 media-element rounded">
-                  <iframe class="embed-responsive-item" src="{{ item }}" frameborder="0" allowfullscreen></iframe>
-                </div>
+              {% if item['type'] == "video" %}
+                  <div class="embed-responsive embed-responsive-16by9 media-element rounded">
+                    {{ item['source']|raw }}
+                  </div>
               {% else %}
-                <img src="{{ item }}" alt="Media" class="img-fluid media-element rounded" />
+                <img src="{{ item['source']|raw }}" alt="Media" class="img-fluid media-element rounded" />
               {% endif %}
             </div>
             <div class="d-flex align-items-center justify-content-end mt-2">
-                <button class="btn btn-info mx-2"><i class="bi bi-trash"></i></button>
-                <button class="btn btn-primary"><i class="bi bi-pencil"></i></button>
+                <a href="{{ path('app_media_delete', {id: item['id']}) }}"class="btn btn-info mx-2"><i class="bi bi-trash"></i></a>
+                {% if item['type'] == "image" and item['banner'] == false %}
+                  <a href="{{ path('app_trick_banner', {id: item['id']}) }}" class="btn btn-secondary"><i class="bi bi-star"></i></a>
+                {% endif %}
             </div>
           </div>
         {% endfor %}
@@ -50,14 +57,28 @@
   <article class="container my-5">
     
     <ul class="d-flex flex-column flex-md-row align-items-center justify-content-center list-unstyled">
-      <li class="badge text-bg-primary p-2 m-2">Créé le 12/06/23</li>
-      <li class="badge text-bg-info p-2 m-2">Catégorie : GRIND</li>
-      <li class="badge text-bg-primary p-2 m-2">Mis à jour le 25/06/23</li>
+      <li class="badge text-bg-primary p-2 m-2">Créé le {{ trick.published | date('d/m/Y') }}</li>
+      <li class="badge text-bg-info p-2 m-2">Catégorie : {{ trick.groupId.name }}</li>
+      <li class="badge text-bg-primary p-2 m-2">Mis à jour le {{ trick.lastUpdate | date('d/m/Y') }}</li>
     </ul>
   </article>
 
   <div class="d-flex align-items-center justify-content-center my-4">
-    <button class="btn btn-danger mx-1"><i class="bi bi-trash"></i>Supprimer le trick</button>
+    <button class="btn btn-danger mx-1" data-bs-toggle="modal" data-bs-target="#exampleModal"><i class="bi bi-trash"></i>Supprimer le trick</button>
     <button class="btn btn-success mx-1"><i class="bi bi-check"></i>Mettre à jour</button>
   </div>
+
+  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                            <div class="modal-body">
+                                Hop hop hop ! Tu veux <b>VRAIMENT</b> supprimer ce trick ?
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn" data-bs-dismiss="modal">Annuler</button>
+                                <a href="{{ path('app_trick_delete', {id: trick.id}) }}"><button type="button" class="btn btn-primary">Supprimer</button></a>
+                            </div>
+                            </div>
+                        </div>
+    </div>
 {% endblock %}

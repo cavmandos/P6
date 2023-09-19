@@ -30,7 +30,7 @@ class Media
         return $this->id;
     }
 
-    public function getTrickId(): ?int
+    public function getTrickId()
     {
         return $this->trickId;
     }
