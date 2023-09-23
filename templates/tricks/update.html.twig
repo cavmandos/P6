@@ -18,7 +18,7 @@
     background-color: black;
   opacity: 0.7;
   ">
-      <h1 class="masthead-heading mb-0 px-2 py-1 text-light">Update : {{ name }}</h1>
+      <h1 class="masthead-heading mb-0 px-2 py-1 text-light"><span class="text-secondary">Update</span> : {{ name }}</h1>
     </div>
   </div>
 
@@ -55,18 +55,14 @@
   </section>
 
   <article class="container my-5">
-    
-    <ul class="d-flex flex-column flex-md-row align-items-center justify-content-center list-unstyled">
-      <li class="badge text-bg-primary p-2 m-2">Créé le {{ trick.published | date('d/m/Y') }}</li>
-      <li class="badge text-bg-info p-2 m-2">Catégorie : {{ trick.groupId.name }}</li>
-      <li class="badge text-bg-primary p-2 m-2">Mis à jour le {{ trick.lastUpdate | date('d/m/Y') }}</li>
-    </ul>
-  </article>
-
+  {{ form_start(form) }}
   <div class="d-flex align-items-center justify-content-center my-4">
     <button class="btn btn-danger mx-1" data-bs-toggle="modal" data-bs-target="#exampleModal"><i class="bi bi-trash"></i>Supprimer le trick</button>
-    <button class="btn btn-success mx-1"><i class="bi bi-check"></i>Mettre à jour</button>
+    <button type="submit" class="btn btn-success mx-1"><i class="bi bi-check"></i>Mettre à jour</button>
   </div>
+
+  {{ form_end(form) }}
+  </article>
 
   <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                         <div class="modal-dialog modal-dialog-centered">

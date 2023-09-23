@@ -67,17 +67,34 @@ class TricksController extends AbstractController {
     }
 
     #[Route('/update-{name}', name:'trick_update')]
-    public function update($name, EntityManagerInterface $entityManager){
+    public function update($name, EntityManagerInterface $entityManager, Request $request, ){
 
         $trick = $entityManager->getRepository(Trick::class)->findOneBy(['name' => $name]);
         $medias = $this->getMediasForTrick($trick, $entityManager);
         $trickBanner = $this->getTrickBanner($trick, $entityManager);
 
+        $form = $this->createForm(TrickType::class, $trick);
+        $form->handleRequest($request);
+
+        try {
+            if ($form->isSubmitted()) {
+                $trick = $this->newLastUpdate($trick);
+                $entityManager->persist($trick);
+                $entityManager->flush();
+                $this->addFlash('success', "Félicitations, vous avez modifié le trick : " . $trick->getName());
+                return $this->redirectToRoute('app_trick_show', ['name' => $trick->getName()]);
+            }
+        } catch (Exception $e) {
+            $this->addFlash('error', 'Oups, il semble y avoir un soucis');
+            $this->redirectToRoute('app_trick_update', ['name' => $trick->getName()]);
+        }
+
         return $this->render('tricks/update.html.twig', [
             'trick' => $trick,
             'medias' => $medias,
             'name' => $name,
-            'trickbanner' => $trickBanner
+            'trickbanner' => $trickBanner,
+            'form' => $form->createView()
         ]);
     }
 
@@ -160,6 +177,16 @@ class TricksController extends AbstractController {
     {
         $now = new \DateTime();
         $trick->setPublished($now);
+        $trick->setLastUpdate($now);
+        $user = $this->security->getUser();
+        $trick->setUserId($user);
+
+        return $trick;
+    }
+
+    private function newLastUpdate(Trick $trick)
+    {
+        $now = new \DateTime();
         $trick->setLastUpdate($now);
         $user = $this->security->getUser();
         $trick->setUserId($user);
