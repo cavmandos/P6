@@ -29,10 +29,29 @@ class TricksController extends AbstractController {
             if ($form->isSubmitted() && $form->isValid()) {
                 $trick = $this->prepareTrick($trick);
                 $mediaUrl = $form->get('medias')->getData();
+                $images = $form->get('images')->getData();
                 
                 if (!empty($mediaUrl)) {
                     $media = $this->createMedia($mediaUrl, $trick);
                     $manager->persist($media);
+                }
+
+                if (!empty($images)) {
+                    $firstImage = true;
+                    foreach ($images as $uploadedImage) {
+                        $fileName = md5(uniqid()) . '.' . $uploadedImage->guessExtension();
+                        $uploadedImage->move($this->getParameter('uploads'), $fileName);
+                        $media = $this->createMedia($fileName, $trick);
+                
+                        if ($firstImage) {
+                            $media->setBanner(true);
+                            $firstImage = false;
+                        } else {
+                            $media->setBanner(false);
+                        }
+                
+                        $manager->persist($media);
+                    }
                 }
     
                 $manager->persist($trick);
@@ -132,6 +151,14 @@ class TricksController extends AbstractController {
         $media = $entityManager->getRepository(Media::class)->findOneBy(['id' => $id]);
         $trick = $entityManager->getRepository(Trick::class)->findOneBy(['id' => $media->getTrickId()]);
         $mediaRepository->remove($media, true);
+        $fileName = $media->getUrl();
+        $uploadDirectory = $this->getParameter('uploads');
+        $fileToDelete = $uploadDirectory . '/' . $fileName;
+
+        if (file_exists($fileToDelete)) {
+            unlink($fileToDelete);
+        }
+
         $this->addFlash('success', "Le media a bien été supprimé");
         return $this->redirectToRoute('app_trick_update', ['name' => $trick->getName()]);
     }

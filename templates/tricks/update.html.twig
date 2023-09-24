@@ -5,7 +5,7 @@
     background-image: url(
       {% if trickbanner[trick.id] is not empty  %}
         {% set bannerMedia = trickbanner[trick.id][0] %}
-        {{ bannerMedia.url|raw }}
+        {{ asset('uploads/' ~ bannerMedia.url|raw) }}
       {% else %}
         '/pictures/image-snowboard-banner.jpg'
       {% endif %}
@@ -39,7 +39,7 @@
                     {{ item['source']|raw }}
                   </div>
               {% else %}
-                <img src="{{ item['source']|raw }}" alt="Media" class="img-fluid media-element rounded" />
+                <img src="{{ asset('uploads/' ~ item['source']|raw) }}" alt="Media" class="img-fluid media-element rounded" />
               {% endif %}
             </div>
             <div class="d-flex align-items-center justify-content-end mt-2">

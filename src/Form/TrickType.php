@@ -6,6 +6,8 @@ use App\Entity\Group;
 use App\Entity\Trick;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -40,6 +42,14 @@ class TrickType extends AbstractType
                 'required' => false,
                 'mapped' => false,
             ])
+
+            ->add('images', FileType::class, [
+                 'attr' => ['class' => 'form-control', 'placeholder' => 'Sélectionnez votre image'],
+                 'label' => 'Image à uploader',
+                 'required' => false,
+                 'mapped' => false,
+                 'multiple' => true
+             ])
         ;
     }
 

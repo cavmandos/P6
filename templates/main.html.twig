@@ -30,7 +30,7 @@
             {% set bannerMedia = medias[trick.id] %}
             {% if bannerMedia is not empty and bannerMedia[0].banner == true %}
                 {% for media in medias[trick.id] %}
-                    <img src="{{ media.url|raw }}" class="card-img-top image-height" alt="{{ trick.name }}">
+                    <img src="{{ asset('uploads/' ~ media.url|raw) }}" class="card-img-top image-height" alt="{{ trick.name }}">
                 {% endfor %}
             {% else %}
                 <img src="/pictures/image-snowboard-card.jpeg" class="card-img-top image-height" alt="Pas encore d'image du Trick">
