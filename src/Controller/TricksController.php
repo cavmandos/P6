@@ -39,18 +39,24 @@ class TricksController extends AbstractController {
                 if (!empty($images)) {
                     $firstImage = true;
                     foreach ($images as $uploadedImage) {
-                        $fileName = md5(uniqid()) . '.' . $uploadedImage->guessExtension();
-                        $uploadedImage->move($this->getParameter('uploads'), $fileName);
-                        $media = $this->createMedia($fileName, $trick);
-                
-                        if ($firstImage) {
-                            $media->setBanner(true);
-                            $firstImage = false;
+                        $imageSize = $uploadedImage->getSize();
+                        if ($imageSize <= 1000000) {
+                            $fileName = md5(uniqid()) . '.' . $uploadedImage->guessExtension();
+                            $uploadedImage->move($this->getParameter('uploads'), $fileName);
+                            $media = $this->createMedia($fileName, $trick);
+    
+                            if ($firstImage) {
+                                $media->setBanner(true);
+                                $firstImage = false;
+                            } else {
+                                $media->setBanner(false);
+                            }
+    
+                            $manager->persist($media);
                         } else {
-                            $media->setBanner(false);
+                            $this->addFlash('error', 'Le fichier fourni est trop volumineux (maxi 1mo)');
+                            return $this->redirectToRoute('app_create');
                         }
-                
-                        $manager->persist($media);
                     }
                 }
     

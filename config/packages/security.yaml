@@ -39,6 +39,10 @@ security:
     access_control:
         # - { path: ^/admin, roles: ROLE_ADMIN }
         - { path: ^/create, roles: ROLE_USER }
+        - { path: ^/update, roles: ROLE_USER }
+        - { path: ^/update/banner/, roles: ROLE_USER }
+        - { path: ^/tricks/delete/, roles: ROLE_USER }
+        - { path: ^/media/delete/, roles: ROLE_USER }
 
 when@test:
     security:
