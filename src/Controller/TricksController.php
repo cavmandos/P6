@@ -37,27 +37,7 @@ class TricksController extends AbstractController {
                 }
 
                 if (!empty($images)) {
-                    $firstImage = true;
-                    foreach ($images as $uploadedImage) {
-                        $imageSize = $uploadedImage->getSize();
-                        if ($imageSize <= 1000000) {
-                            $fileName = md5(uniqid()) . '.' . $uploadedImage->guessExtension();
-                            $uploadedImage->move($this->getParameter('uploads'), $fileName);
-                            $media = $this->createMedia($fileName, $trick);
-    
-                            if ($firstImage) {
-                                $media->setBanner(true);
-                                $firstImage = false;
-                            } else {
-                                $media->setBanner(false);
-                            }
-    
-                            $manager->persist($media);
-                        } else {
-                            $this->addFlash('error', 'Le fichier fourni est trop volumineux (maxi 1mo)');
-                            return $this->redirectToRoute('app_create');
-                        }
-                    }
+                    $this->createImage($images, $trick, $manager);
                 }
     
                 $manager->persist($trick);
@@ -97,12 +77,24 @@ class TricksController extends AbstractController {
         $trick = $entityManager->getRepository(Trick::class)->findOneBy(['name' => $name]);
         $medias = $this->getMediasForTrick($trick, $entityManager);
         $trickBanner = $this->getTrickBanner($trick, $entityManager);
-
         $form = $this->createForm(TrickType::class, $trick);
         $form->handleRequest($request);
 
         try {
             if ($form->isSubmitted()) {
+
+                $mediaUrl = $form->get('medias')->getData();
+                $images = $form->get('images')->getData();
+
+                if (!empty($mediaUrl)) {
+                    $media = $this->createMedia($mediaUrl, $trick);
+                    $entityManager->persist($media);
+                }
+
+                if (!empty($images)) {
+                    $this->addImage($images, $trick, $entityManager);
+                }
+
                 $trick = $this->newLastUpdate($trick);
                 $entityManager->persist($trick);
                 $entityManager->flush();
@@ -146,6 +138,17 @@ class TricksController extends AbstractController {
     public function deleteTrick($id, EntityManagerInterface $entityManager, TrickRepository $trickRepository)
     {
         $trick = $entityManager->getRepository(Trick::class)->findOneBy(['id' => $id]);
+        $medias = $entityManager->getRepository(Media::class)->findBy(['trickId' => $id]);
+
+        foreach ($medias as $media) {
+            $fileName = $media->getUrl();
+            $uploadDirectory = $this->getParameter('uploads');
+            $fileToDelete = $uploadDirectory . '/' . $fileName;
+            if (file_exists($fileToDelete)) {
+                unlink($fileToDelete);
+            }
+        };
+
         $trickRepository->remove($trick, true);
         $this->addFlash('success', "So long ! Vous avez supprimé le trick : ".$trick->getName());
         return $this->redirectToRoute('app_main');
@@ -247,6 +250,42 @@ class TricksController extends AbstractController {
         }
 
         return $media;
+    }
+
+    private function createImage($images, Trick $trick, EntityManagerInterface $manager)
+    {
+        foreach ($images as $uploadedImage) {
+            $imageSize = $uploadedImage->getSize();
+
+            if ($imageSize <= 1000000) {
+                $fileName = md5(uniqid()) . '.' . $uploadedImage->guessExtension();
+                $uploadedImage->move($this->getParameter('uploads'), $fileName);
+                $media = $this->createMedia($fileName, $trick);
+                $media->setBanner(true);
+                $manager->persist($media);
+            } else {
+                $this->addFlash('error', 'Le fichier fourni est trop volumineux (maxi 1mo)');
+                return $this->redirectToRoute('app_create');
+            }
+        }
+    }
+
+    private function addImage($images, Trick $trick, EntityManagerInterface $manager)
+    {
+        foreach ($images as $uploadedImage) {
+            $imageSize = $uploadedImage->getSize();
+
+            if ($imageSize <= 1000000) {
+                $fileName = md5(uniqid()) . '.' . $uploadedImage->guessExtension();
+                $uploadedImage->move($this->getParameter('uploads'), $fileName);
+                $media = $this->createMedia($fileName, $trick);
+                $media->setBanner(false);
+                $manager->persist($media);
+            } else {
+                $this->addFlash('error', 'Le fichier fourni est trop volumineux (maxi 1mo)');
+                return $this->redirectToRoute('app_create');
+            }
+        }
     }
 
 }

@@ -37,15 +37,15 @@ class TrickType extends AbstractType
             ])
 
             ->add('medias', TextType::class, [
-                'attr' => ['class' => 'form-control', 'placeholder' => 'Votre url / iframe ici'],
-                'label' => 'URL du média (image ou vidéo)',
+                'attr' => ['class' => 'form-control', 'placeholder' => 'Votre iframe ici'],
+                'label' => 'Ajouter une vidéo',
                 'required' => false,
                 'mapped' => false,
             ])
 
             ->add('images', FileType::class, [
                  'attr' => ['class' => 'form-control', 'placeholder' => 'Sélectionnez votre image'],
-                 'label' => 'Image à uploader',
+                 'label' => 'Ajouter une image',
                  'required' => false,
                  'mapped' => false,
                  'multiple' => true
