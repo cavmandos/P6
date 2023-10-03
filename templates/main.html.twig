@@ -38,7 +38,7 @@
             <div class="card-body">
                 <h5 class="card-title">{{ trick.name }}</h5>
                 <div class="d-flex align-items-center justify-content-between">
-                    <a href={{ path('app_trick_show', {name: trick.name}) }} class="btn btn-primary">On y va</a>
+                    <a href={{ path('app_trick_show', {slug: trick.slug}) }} class="btn btn-primary">On y va</a>
                     <div class="d-flex align-items-center">
                     {% if app.user %}
                         <a href="{{ path('app_trick_update', {name: trick.name}) }}" class="mx-4"><i class="bi bi-pencil"></i></a>

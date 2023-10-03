@@ -9,6 +9,7 @@ use App\Form\DiscussionType;
 use App\Form\TrickType;
 use App\Repository\MediaRepository;
 use App\Repository\TrickRepository;
+use App\Service\SlugifyService;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use PhpParser\Node\Stmt\TryCatch;
@@ -21,7 +22,7 @@ use Symfony\Component\Security\Core\Security;
 class TricksController extends AbstractController {
 
     #[Route('/create', name:'create')]
-    public function create(Request $request, EntityManagerInterface $manager,){
+    public function create(Request $request, EntityManagerInterface $manager, SlugifyService $slugifyService){
 
         $trick = new Trick();
         $form = $this->createForm(TrickType::class, $trick);
@@ -29,7 +30,7 @@ class TricksController extends AbstractController {
 
         try {
             if ($form->isSubmitted() && $form->isValid()) {
-                $trick = $this->prepareTrick($trick);
+                $trick = $this->prepareTrick($trick, $slugifyService);
                 $mediaUrl = $form->get('medias')->getData();
                 $images = $form->get('images')->getData();
                 
@@ -58,10 +59,10 @@ class TricksController extends AbstractController {
 
     }
 
-    #[Route('/tricks/{name}', name:'trick_show')]
-    public function show($name, EntityManagerInterface $entityManager, Request $request){
+    #[Route('/tricks/{slug}', name:'trick_show')]
+    public function show($slug, EntityManagerInterface $entityManager, Request $request){
 
-        $trick = $entityManager->getRepository(Trick::class)->findOneBy(['name' => $name]);
+        $trick = $entityManager->getRepository(Trick::class)->findOneBy(['slug' => $slug]);
         $medias = $this->getMediasForTrick($trick, $entityManager);
         $trickBanner = $this->getTrickBanner($trick, $entityManager);
         $comments = $entityManager->getRepository(Discussion::class)->findBy(['trickId' => $trick->getId()]);
@@ -76,18 +77,18 @@ class TricksController extends AbstractController {
                 $entityManager->persist($discussion);
                 $entityManager->flush();
                 $this->addFlash('success', "Votre message a bien été publié");
-                return $this->redirectToRoute('app_trick_show', ['name' => $trick->getName()]);
+                return $this->redirectToRoute('app_trick_show', ['slug' => $trick->getSlug()]);
             }
         } catch (Exception $e) {
             $this->addFlash('error', 'Oups, il semble y avoir un soucis');
-            $this->redirectToRoute('app_trick_show', ['name' => $trick->getName()]);
+            $this->redirectToRoute('app_trick_show', ['slug' => $trick->getSlug()]);
         }
 
         return $this->render('tricks/trick.html.twig', [
             'form' => $form->createView(),
             'trick' => $trick,
             'medias' => $medias,
-            'name' => $name,
+            'slug' => $slug,
             'trickbanner' => $trickBanner,
             'discussion' => $comments
         ]);
@@ -231,13 +232,16 @@ class TricksController extends AbstractController {
         ];
     }
 
-    private function prepareTrick(Trick $trick)
+    private function prepareTrick(Trick $trick, SlugifyService $slugifyService)
     {
         $now = new \DateTime();
         $trick->setPublished($now);
         $trick->setLastUpdate($now);
         $user = $this->security->getUser();
         $trick->setUserId($user);
+        $text = $trick->getName();
+        $text = $slugifyService->slugify($text);
+        $trick->setSlug($text);
 
         return $trick;
     }

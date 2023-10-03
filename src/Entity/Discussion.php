@@ -25,8 +25,8 @@ class Discussion
     #[ORM\Column(length: 255)]
     private ?string $content = null;
 
-    #[ORM\ManyToOne(targetEntity: Trick::class, inversedBy: 'comments')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(name: 'trickId', nullable: false)]
     private ?Trick $trickId = null;
 
     public function getId(): ?int

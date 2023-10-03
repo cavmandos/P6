@@ -41,9 +41,15 @@ class Trick
     #[ORM\OneToMany(mappedBy: 'trickId', targetEntity: Media::class, orphanRemoval: true, cascade: ['persist', 'remove'])]
     private $medias;
 
+    #[ORM\OneToMany(mappedBy: 'trickId', targetEntity: Discussion::class, orphanRemoval: true, cascade: ['persist', 'remove'])]
+    private $discussions;
+
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     #[Assert\DateTime]
     private ?\DateTimeInterface $published = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $slug = null;
 
     public function __construct()
     {
@@ -123,6 +129,18 @@ class Trick
     public function setPublished(\DateTimeInterface $published): static
     {
         $this->published = $published;
+
+        return $this;
+    }
+
+    public function getSlug(): ?string
+    {
+        return $this->slug;
+    }
+
+    public function setSlug(string $slug): static
+    {
+        $this->slug = $slug;
 
         return $this;
     }
