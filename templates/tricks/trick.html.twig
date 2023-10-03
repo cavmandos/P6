@@ -69,7 +69,7 @@
     </div>
   </section>
 
-  <article class="container my-5">
+  <article class="container mt-5">
     <p>{{ trick.description }}</p>
 
     <ul class="d-flex flex-column flex-md-row align-items-center justify-content-center list-unstyled">
@@ -78,4 +78,42 @@
       <li class="badge text-bg-primary p-2 m-2">Mis à jour le {{ trick.lastUpdate | date('d/m/Y') }}</li>
     </ul>
   </article>
+
+<section class="bg-light">
+  <div class="d-flex justify-content-center border-top border-bottom border-dark bg-white">
+      <h2 class="my-2">Espace de discussion</h2>
+  </div>
+  {% if app.user %}
+    {{ form_start(form) }}
+      <div class="my-4 col-md-10 col-11 mx-auto">
+        <div class="form-group text-center">
+          {{ form_widget(form.content) }}
+        </div>
+      </div>
+    <div class="d-flex align-items-center justify-content-center my-4">
+      <button type="submit" class="btn btn-primary mx-1">Commenter</button>
+    </div>
+    {{ form_end(form) }}
+  {% endif %}
+
+  <div class="container">
+    <div class="my-3">
+      {% for item in discussion %}
+      <div class="card m-2">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <div class="d-flex align-items-center">
+              <img src="/pictures/avatar.png" alt="Avatar" width="25px">
+              <span class="card-title h5 mb-0 mx-2">{{ item.userId.username }}</span>
+            </div>
+            <span>{{ item.creationDate | date('d/m/Y') }}</span>
+          </div>
+          <p class="card-text mb-0">{{ item.content }}</p>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
 {% endblock %}

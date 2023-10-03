@@ -2,8 +2,10 @@
 
 namespace App\Controller;
 
+use App\Entity\Discussion;
 use App\Entity\Media;
 use App\Entity\Trick;
+use App\Form\DiscussionType;
 use App\Form\TrickType;
 use App\Repository\MediaRepository;
 use App\Repository\TrickRepository;
@@ -57,17 +59,37 @@ class TricksController extends AbstractController {
     }
 
     #[Route('/tricks/{name}', name:'trick_show')]
-    public function show($name, EntityManagerInterface $entityManager){
+    public function show($name, EntityManagerInterface $entityManager, Request $request){
 
         $trick = $entityManager->getRepository(Trick::class)->findOneBy(['name' => $name]);
         $medias = $this->getMediasForTrick($trick, $entityManager);
         $trickBanner = $this->getTrickBanner($trick, $entityManager);
+        $comments = $entityManager->getRepository(Discussion::class)->findBy(['trickId' => $trick->getId()]);
+
+        $discussion = new Discussion();
+        $form = $this->createForm(DiscussionType::class, $discussion);
+        $form->handleRequest($request);
+
+        try {
+            if ($form->isSubmitted() && $form->isValid()) {
+                $discussion = $this->prepareComment($discussion, $trick);
+                $entityManager->persist($discussion);
+                $entityManager->flush();
+                $this->addFlash('success', "Votre message a bien été publié");
+                return $this->redirectToRoute('app_trick_show', ['name' => $trick->getName()]);
+            }
+        } catch (Exception $e) {
+            $this->addFlash('error', 'Oups, il semble y avoir un soucis');
+            $this->redirectToRoute('app_trick_show', ['name' => $trick->getName()]);
+        }
 
         return $this->render('tricks/trick.html.twig', [
+            'form' => $form->createView(),
             'trick' => $trick,
             'medias' => $medias,
             'name' => $name,
-            'trickbanner' => $trickBanner
+            'trickbanner' => $trickBanner,
+            'discussion' => $comments
         ]);
     }
 
@@ -218,6 +240,17 @@ class TricksController extends AbstractController {
         $trick->setUserId($user);
 
         return $trick;
+    }
+
+    private function prepareComment(Discussion $discussion, Trick $trick)
+    {
+        $now = new \DateTime();
+        $discussion->setCreationDate($now);
+        $user = $this->security->getUser();
+        $discussion->setUserId($user);
+        $discussion->setTrickId($trick);
+
+        return $discussion;
     }
 
     private function newLastUpdate(Trick $trick)
