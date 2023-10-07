@@ -17,6 +17,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Security;
+use Doctrine\ORM\Tools\Pagination\Paginator;
+use Doctrine\ORM\QueryBuilder;
 
 #[Route(name: 'app_')]
 class TricksController extends AbstractController {
@@ -65,7 +67,20 @@ class TricksController extends AbstractController {
         $trick = $entityManager->getRepository(Trick::class)->findOneBy(['slug' => $slug]);
         $medias = $this->getMediasForTrick($trick, $entityManager);
         $trickBanner = $this->getTrickBanner($trick, $entityManager);
-        $comments = $entityManager->getRepository(Discussion::class)->findBy(['trickId' => $trick->getId()]);
+
+        /** @var QueryBuilder $queryBuilder */
+        $queryBuilder = $entityManager->getRepository(Discussion::class)->createQueryBuilder('d');
+        $queryBuilder
+            ->where('d.trickId = :trickId')
+            ->setParameter('trickId', $trick->getId())
+            ->orderBy('d.creationDate', 'DESC');
+
+        $commentsQuery = $queryBuilder->getQuery();
+
+        $paginator = new Paginator($commentsQuery);
+        $paginator->getQuery()
+            ->setFirstResult($request->query->getInt('page', 1) * 10 - 10)
+            ->setMaxResults(10);
 
         $discussion = new Discussion();
         $form = $this->createForm(DiscussionType::class, $discussion);
@@ -84,13 +99,16 @@ class TricksController extends AbstractController {
             $this->redirectToRoute('app_trick_show', ['slug' => $trick->getSlug()]);
         }
 
+        $currentPage = $request->query->getInt('page', 1);
+
         return $this->render('tricks/trick.html.twig', [
             'form' => $form->createView(),
             'trick' => $trick,
             'medias' => $medias,
             'slug' => $slug,
             'trickbanner' => $trickBanner,
-            'discussion' => $comments
+            'discussion' => $paginator,
+            'current_page' => $currentPage,
         ]);
     }
 

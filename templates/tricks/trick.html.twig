@@ -101,9 +101,9 @@
       {% for item in discussion %}
       <div class="card m-2">
         <div class="card-body">
-          <div class="d-flex justify-content-between align-items-center mb-3">
+          <div class="d-flex justify-content-between align-items-center">
             <div class="d-flex align-items-center">
-              <img src="/pictures/avatar.png" alt="Avatar" width="25px">
+              <img src="/pictures/avatar.png" alt="Avatar" width="20px">
               <span class="card-title h5 mb-0 mx-2">{{ item.userId.username }}</span>
             </div>
             <span>{{ item.creationDate | date('d/m/Y') }}</span>
@@ -112,6 +112,19 @@
         </div>
       </div>
       {% endfor %}
+
+      <div class="pagination d-flex justify-content-center align-items-center">
+          <ul>
+              {% if current_page > 1 %}
+                  <li class="list-unstyled"><a class="btn btn-primary" href="{{ path('app_trick_show', {'slug': slug, 'page': current_page - 1}) }}">Précédent</a></li>
+              {% endif %}
+              
+              {% if current_page < discussion.count // 10 + 1 %}
+                  <li class="list-unstyled"><a class="btn btn-primary" href="{{ path('app_trick_show', {'slug': slug, 'page': current_page + 1}) }}">Suivant</a></li>
+              {% endif %}
+          </ul>
+      </div>
+
     </div>
   </div>
 </section>
