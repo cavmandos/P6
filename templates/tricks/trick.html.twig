@@ -106,7 +106,12 @@
               <img src="/pictures/avatar.png" alt="Avatar" width="20px">
               <span class="card-title h5 mb-0 mx-2">{{ item.userId.username }}</span>
             </div>
-            <span>{{ item.creationDate | date('d/m/Y') }}</span>
+            <div>
+              <span>{{ item.creationDate | date('d/m/Y') }}</span>
+              {% if app.user and app.user.id == item.userId.id %}
+                <a href="{{ path('app_discussion_delete', {id: item.id}) }}"><button type="button" class="btn btn-primary"><i class="bi bi-trash-fill"></i></button></a>
+              {% endif %}
+            </div>
           </div>
           <p class="card-text mb-0">{{ item.content }}</p>
         </div>

@@ -7,6 +7,7 @@ use App\Entity\Media;
 use App\Entity\Trick;
 use App\Form\DiscussionType;
 use App\Form\TrickType;
+use App\Repository\DiscussionRepository;
 use App\Repository\MediaRepository;
 use App\Repository\TrickRepository;
 use App\Service\SlugifyService;
@@ -67,20 +68,7 @@ class TricksController extends AbstractController {
         $trick = $entityManager->getRepository(Trick::class)->findOneBy(['slug' => $slug]);
         $medias = $this->getMediasForTrick($trick, $entityManager);
         $trickBanner = $this->getTrickBanner($trick, $entityManager);
-
-        /** @var QueryBuilder $queryBuilder */
-        $queryBuilder = $entityManager->getRepository(Discussion::class)->createQueryBuilder('d');
-        $queryBuilder
-            ->where('d.trickId = :trickId')
-            ->setParameter('trickId', $trick->getId())
-            ->orderBy('d.creationDate', 'DESC');
-
-        $commentsQuery = $queryBuilder->getQuery();
-
-        $paginator = new Paginator($commentsQuery);
-        $paginator->getQuery()
-            ->setFirstResult($request->query->getInt('page', 1) * 10 - 10)
-            ->setMaxResults(10);
+        $paginator = $this->paginate($entityManager, $trick, $request);
 
         $discussion = new Discussion();
         $form = $this->createForm(DiscussionType::class, $discussion);
@@ -140,7 +128,7 @@ class TricksController extends AbstractController {
                 $entityManager->persist($trick);
                 $entityManager->flush();
                 $this->addFlash('success', "Félicitations, vous avez modifié le trick : " . $trick->getName());
-                return $this->redirectToRoute('app_trick_show', ['name' => $trick->getName()]);
+                return $this->redirectToRoute('app_trick_show', ['slug' => $trick->getSlug()]);
             }
         } catch (Exception $e) {
             $this->addFlash('error', 'Oups, il semble y avoir un soucis');
@@ -172,7 +160,7 @@ class TricksController extends AbstractController {
         
         $entityManager->flush();
         $this->addFlash('success', "Héhé, ça c'est un bon choix de bannière :-) ");
-        return $this->redirectToRoute('app_trick_update', ['name' => $trick->getName()]);
+        return $this->redirectToRoute('app_trick_update', ['slug' => $trick->getSlug()]);
     }
 
     #[Route('/tricks/delete/{id}', name: 'trick_delete')]
@@ -211,6 +199,23 @@ class TricksController extends AbstractController {
 
         $this->addFlash('success', "Le media a bien été supprimé");
         return $this->redirectToRoute('app_trick_update', ['name' => $trick->getName()]);
+    }
+
+    #[Route('/discussion/delete/{id}', name: 'discussion_delete')]
+    public function deleteComment($id, EntityManagerInterface $entityManager, DiscussionRepository $discussionRepository)
+    {
+        try {
+            $discussion = $entityManager->getRepository(Discussion::class)->findOneBy(['id' => $id]);
+            $trick = $entityManager->getRepository(Trick::class)->findOneBy(['id' => $discussion->getTrickId()]);
+            $discussionRepository->remove($discussion, true);
+
+            $this->addFlash('success', "Ce commentaire a bien été supprimé");
+            return $this->redirectToRoute('app_trick_show', ['slug' => $trick->getSlug()]);
+        } catch (Exception $e) {
+            $this->addFlash('error', 'Oups, il semble y avoir un soucis');
+            $this->redirectToRoute('app_trick_show', ['slug' => $trick->getSlug()]);
+        }
+        
     }
 
     private $security;
@@ -341,6 +346,25 @@ class TricksController extends AbstractController {
                 return $this->redirectToRoute('app_create');
             }
         }
+    }
+
+    private function paginate(EntityManagerInterface $entityManager, Trick $trick, Request $request)
+    {
+        /** @var QueryBuilder $queryBuilder */
+        $queryBuilder = $entityManager->getRepository(Discussion::class)->createQueryBuilder('d');
+        $queryBuilder
+            ->where('d.trickId = :trickId')
+            ->setParameter('trickId', $trick->getId())
+            ->orderBy('d.creationDate', 'DESC');
+
+        $commentsQuery = $queryBuilder->getQuery();
+
+        $paginator = new Paginator($commentsQuery);
+        $paginator->getQuery()
+            ->setFirstResult($request->query->getInt('page', 1) * 10 - 10)
+            ->setMaxResults(10);
+
+        return $paginator;
     }
 
 }
