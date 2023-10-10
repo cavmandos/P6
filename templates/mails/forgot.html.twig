@@ -1,0 +1,7 @@
+<p> On a oublié son mot de passe {{ user.username }} ?</p>
+
+<p>Pour changer votre mot de passe, veuillez cliquer sur le lien suivant :</p>
+
+<p><a href={{ absolute_url(path('app_password', {token: token, id: user.id})) }}>Changer mon mot de passe</a></p>
+
+<p>À bientôt Rider !</p>

@@ -5,6 +5,8 @@ namespace App\Controller;
 use App\Entity\Media;
 use App\Entity\Trick;
 use App\Entity\User;
+use App\Form\ForgotType;
+use App\Form\NewPasswordType;
 use App\Form\UserType;
 use App\Service\MailerService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -54,22 +56,67 @@ class MainController extends AbstractController {
     }
 
     #[Route('/forgot', name:'forgot')]
-    public function forgot(Request $request){
+    public function forgot(Request $request, UserRepository $userRepository, EntityManagerInterface $entityManager, TokenGeneratorInterface $tokenGeneratorInterface, MailerService $mailerService){
 
-        if ($request->isMethod('POST')) {
-            dd("Envoi email :-)");
+        $form = $this->createForm(ForgotType::class);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $email = $form->get('email')->getData();
+            $user = $userRepository->findOneBy(['email' => $email]);
+
+            if ($user) {
+                $token = $tokenGeneratorInterface->generateToken();
+                $user->setToken($token);
+                $entityManager->persist($user);
+                $entityManager->flush();
+    
+                $mailerService->send(
+                    $user->getEmail(),
+                    'Réinitialisation du mot de passe',
+                    'forgot.html.twig',
+                    [
+                        'user' => $user,
+                        'token' => $token
+                    ]
+                );
+                $this->addFlash('success', 'Email de récupération envoyé');
+                return $this->redirectToRoute('app_forgot');
+                
+            } else {
+                $this->addFlash('error', 'Aucun utilisateur trouvé avec cet email');
+                return $this->redirectToRoute('app_forgot');
+            }
         }
 
-        return $this->render('user/forgot.html.twig');
+        return $this->render('user/forgot.html.twig', [
+            'form' => $form->createView()
+        ]);
     }
 
-    #[Route('/new-password', name:'new-password')]
-    public function newPassword(Request $request){
+    #[Route('/password/{token}/{id<\d+>}', name:'password', methods: ['GET', 'POST'])]
+    public function newPassword(string $token, int $id, UserRepository $userRepository, Request $request, UserPasswordHasherInterface $passwordHasher)
+    {
+        
+        $form = $this->createForm(NewPasswordType::class);
+        $form->handleRequest($request);
 
-        if ($request->isMethod('POST')) {
-            dd("Mot de passe changé :-)");
+        if ($form->isSubmitted() && $form->isValid()) {
+
+            $user = $userRepository->find($id);
+            if (!$user) {
+                throw new AccessDeniedException();
+            }
+    
+            $password = $form->get('password')->getData();
+            $userRepository->changePassword($token, $user, $password, $passwordHasher);
+            $this->addFlash('success', 'Votre mot de passe a bien été changé');
+            return $this->redirectToRoute('app_main');
         }
-        return $this->render('user/new-password.html.twig');
+
+        return $this->render('user/new-password.html.twig', [
+             'form' => $form->createView()
+        ]);
     }
 
     #[Route('/verify/{token}/{id<\d+>}', name: 'verify', methods: ['GET'])]

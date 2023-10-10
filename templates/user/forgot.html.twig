@@ -9,17 +9,18 @@
     </div>
     <h1 class="text-center">Mot de passe oublié</h1>
     <p class="text-center">Alors ? On a un petit trou de mémoire ?</p>
+    {% include "includes/_alerts.html.twig" %}
     <div class="row justify-content-center">
-    <form class="col-11 col-md-8 col-lg-4 my-3" method="post" action="{{ path('app_forgot') }}">
-        <div class="form-group">
-            <label for="username">Votre pseudo</label>
-            <input type="text" id="username" name="_username" class="form-control mb-4" required />
+    {{ form_start(form) }}
+        <div class="mb-3 col-11 col-md-8 col-lg-4 mx-auto">
+            <div class="form-group">
+                {{ form_widget(form.email) }}
+            </div>
         </div>
-
         <p class="text-center">
-            <button type="submit" class="btn btn-primary">Envoyer le mail</button>
+            <button class="btn btn-primary" type="submit">Envoyer</button>
         </p>
-    </form>
+    {{ form_end(form) }}
     </div>
 
 </div>

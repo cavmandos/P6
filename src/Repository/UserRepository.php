@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 /**
  * @extends ServiceEntityRepository<User>
@@ -45,6 +46,16 @@ class UserRepository extends ServiceEntityRepository
             $user->setIsVerified(true);
             $user->setToken(null);
 
+            $entityManager = $this->getEntityManager();
+            $entityManager->flush();
+        }
+    }
+
+    public function changePassword(string $token, User $user, string $password, UserPasswordHasherInterface $passwordHasher)
+    {
+        if ($user->getToken() === $token) {
+            $user->setPassword($passwordHasher->hashPassword($user, $password));
+            $user->setToken(null);
             $entityManager = $this->getEntityManager();
             $entityManager->flush();
         }
