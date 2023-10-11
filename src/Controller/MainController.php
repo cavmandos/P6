@@ -9,6 +9,7 @@ use App\Form\ForgotType;
 use App\Form\NewPasswordType;
 use App\Form\UserType;
 use App\Service\MailerService;
+use App\Constants\FlashMessages;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -80,11 +81,11 @@ class MainController extends AbstractController {
                         'token' => $token
                     ]
                 );
-                $this->addFlash('success', 'Email de récupération envoyé');
+                $this->addFlash('success', FlashMessages::RECOVERY_OK);
                 return $this->redirectToRoute('app_forgot');
                 
             } else {
-                $this->addFlash('error', 'Aucun utilisateur trouvé avec cet email');
+                $this->addFlash('error', FlashMessages::RECOVERY_KO);
                 return $this->redirectToRoute('app_forgot');
             }
         }
@@ -110,7 +111,7 @@ class MainController extends AbstractController {
     
             $password = $form->get('password')->getData();
             $userRepository->changePassword($token, $user, $password, $passwordHasher);
-            $this->addFlash('success', 'Votre mot de passe a bien été changé');
+            $this->addFlash('success', FlashMessages::PASSWORD_OK);
             return $this->redirectToRoute('app_main');
         }
 
@@ -130,20 +131,20 @@ class MainController extends AbstractController {
 
         $userRepository->verifyUser($token, $user);
 
-        $this->addFlash('success', 'Votre compte est maintenant activé ! GO RIDE !');
+        $this->addFlash('success', FlashMessages::ACTIVATION_OK);
         return $this->redirectToRoute('app_login');
     }
 
     private function checkExistingUser(User $user, EntityManagerInterface $entityManager): bool {
         $existingUser = $entityManager->getRepository(User::class)->findOneBy(['username' => $user->getUsername()]);
         if ($existingUser) {
-            $this->addFlash('error', 'Un utilisateur avec le même nom existe déjà.');
+            $this->addFlash('error', FlashMessages::ALREADY_NAME);
             return true;
         }
 
         $existingUserByEmail = $entityManager->getRepository(User::class)->findOneBy(['email' => $user->getEmail()]);
         if ($existingUserByEmail) {
-            $this->addFlash('error', 'Un utilisateur avec le même email existe déjà.');
+            $this->addFlash('error', FlashMessages::ALREADY_EMAIL);
             return true;
         }
 
@@ -188,7 +189,7 @@ class MainController extends AbstractController {
             ]
         );
 
-        $this->addFlash('success', 'Félicitation Rider ! Vous allez recevoir un email pour valider votre inscription.');
+        $this->addFlash('success', FlashMessages::SIGNUP_OK);
         return $user;
     }
         

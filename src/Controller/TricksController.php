@@ -7,6 +7,7 @@ use App\Entity\Media;
 use App\Entity\Trick;
 use App\Form\DiscussionType;
 use App\Form\TrickType;
+use App\Constants\FlashMessages;
 use App\Repository\DiscussionRepository;
 use App\Repository\MediaRepository;
 use App\Repository\TrickRepository;
@@ -48,11 +49,11 @@ class TricksController extends AbstractController {
     
                 $manager->persist($trick);
                 $manager->flush();
-                $this->addFlash('success', "Félicitations, vous avez créé le trick : " . $trick->getName());
+                $this->addFlash('success', FlashMessages::TRICK_OK . $trick->getName());
                 return $this->redirectToRoute('app_main');
             }
         } catch (Exception $e) {
-            $this->addFlash('error', 'Oups, il semble y avoir un soucis');
+            $this->addFlash('error', FlashMessages::PROBLEM);
             $this->redirectToRoute('app_create');
         }
 
@@ -79,11 +80,11 @@ class TricksController extends AbstractController {
                 $discussion = $this->prepareComment($discussion, $trick);
                 $entityManager->persist($discussion);
                 $entityManager->flush();
-                $this->addFlash('success', "Votre message a bien été publié");
+                $this->addFlash('success', FlashMessages::MESSAGE_OK);
                 return $this->redirectToRoute('app_trick_show', ['slug' => $trick->getSlug()]);
             }
         } catch (Exception $e) {
-            $this->addFlash('error', 'Oups, il semble y avoir un soucis');
+            $this->addFlash('error', FlashMessages::PROBLEM);
             $this->redirectToRoute('app_trick_show', ['slug' => $trick->getSlug()]);
         }
 
@@ -127,11 +128,11 @@ class TricksController extends AbstractController {
                 $trick = $this->newLastUpdate($trick);
                 $entityManager->persist($trick);
                 $entityManager->flush();
-                $this->addFlash('success', "Félicitations, vous avez modifié le trick : " . $trick->getName());
+                $this->addFlash('success', FlashMessages::TRICK_UPDATE . $trick->getName());
                 return $this->redirectToRoute('app_trick_show', ['slug' => $trick->getSlug()]);
             }
         } catch (Exception $e) {
-            $this->addFlash('error', 'Oups, il semble y avoir un soucis');
+            $this->addFlash('error', FlashMessages::PROBLEM);
             $this->redirectToRoute('app_trick_update', ['name' => $trick->getName()]);
         }
 
@@ -159,7 +160,7 @@ class TricksController extends AbstractController {
         };
         
         $entityManager->flush();
-        $this->addFlash('success', "Héhé, ça c'est un bon choix de bannière :-) ");
+        $this->addFlash('success', FlashMessages::BANNER_CHANGE);
         return $this->redirectToRoute('app_trick_update', ['slug' => $trick->getSlug()]);
     }
 
@@ -179,7 +180,7 @@ class TricksController extends AbstractController {
         };
 
         $trickRepository->remove($trick, true);
-        $this->addFlash('success', "So long ! Vous avez supprimé le trick : ".$trick->getName());
+        $this->addFlash('success', FlashMessages::TRICK_DELETE.$trick->getName());
         return $this->redirectToRoute('app_main');
     }
 
@@ -197,7 +198,7 @@ class TricksController extends AbstractController {
             unlink($fileToDelete);
         }
 
-        $this->addFlash('success', "Le media a bien été supprimé");
+        $this->addFlash('success', FlashMessages::MEDIA_DELETE);
         return $this->redirectToRoute('app_trick_update', ['name' => $trick->getName()]);
     }
 
@@ -209,10 +210,10 @@ class TricksController extends AbstractController {
             $trick = $entityManager->getRepository(Trick::class)->findOneBy(['id' => $discussion->getTrickId()]);
             $discussionRepository->remove($discussion, true);
 
-            $this->addFlash('success', "Ce commentaire a bien été supprimé");
+            $this->addFlash('success', FlashMessages::MESSAGE_DELETE);
             return $this->redirectToRoute('app_trick_show', ['slug' => $trick->getSlug()]);
         } catch (Exception $e) {
-            $this->addFlash('error', 'Oups, il semble y avoir un soucis');
+            $this->addFlash('error', FlashMessages::PROBLEM);
             $this->redirectToRoute('app_trick_show', ['slug' => $trick->getSlug()]);
         }
         
@@ -324,7 +325,7 @@ class TricksController extends AbstractController {
                 $media->setBanner(true);
                 $manager->persist($media);
             } else {
-                $this->addFlash('error', 'Le fichier fourni est trop volumineux (maxi 1mo)');
+                $this->addFlash('error', FlashMessages::TOO_LARGE);
                 return $this->redirectToRoute('app_create');
             }
         }
@@ -342,7 +343,7 @@ class TricksController extends AbstractController {
                 $media->setBanner(false);
                 $manager->persist($media);
             } else {
-                $this->addFlash('error', 'Le fichier fourni est trop volumineux (maxi 1mo)');
+                $this->addFlash('error', FlashMessages::TOO_LARGE);
                 return $this->redirectToRoute('app_create');
             }
         }
