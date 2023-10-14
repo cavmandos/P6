@@ -9,6 +9,7 @@ use App\Form\ForgotType;
 use App\Form\NewPasswordType;
 use App\Form\UserType;
 use App\Service\MailerService;
+use App\Service\UserService;
 use App\Constants\FlashMessages;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -43,11 +44,23 @@ class MainController extends AbstractController {
     }
 
     #[Route('/signup', name:'signup')]
-    public function signUp(Request $request, UserPasswordHasherInterface $passwordHasher, ValidatorInterface $validator, EntityManagerInterface $entityManager, MailerService $mailerService, TokenGeneratorInterface $tokenGeneratorInterface) {
-        
-        $user = $this->createUser($request, $passwordHasher, $validator, $entityManager, $mailerService, $tokenGeneratorInterface);
+    public function signUp(Request $request, UserPasswordHasherInterface $passwordHasher, ValidatorInterface $validator, EntityManagerInterface $entityManager, MailerService $mailerService, TokenGeneratorInterface $tokenGeneratorInterface, UserService $userService) 
+    {
+        $user = new User();
+        $form = $this->createForm(UserType::class, $user);
+        $form->handleRequest($request);
+        $createdUser = $userService->createUser($user, $passwordHasher, $validator, $entityManager, $mailerService, $tokenGeneratorInterface);
 
-        if ($user !== null) {
+        if (!$form->isSubmitted()) {
+            return $this->render('user/signup.html.twig', [
+                'form' => $form->createView()
+            ]);
+        }
+
+        if (isset($createdUser['error'])) {
+            $this->addFlash('error', $createdUser['error']);
+        } else {
+            $this->addFlash('success', FlashMessages::SIGNUP_OK);
             return $this->redirectToRoute('app_login');
         }
 
@@ -57,14 +70,21 @@ class MainController extends AbstractController {
     }
 
     #[Route('/forgot', name:'forgot')]
-    public function forgot(Request $request, UserRepository $userRepository, EntityManagerInterface $entityManager, TokenGeneratorInterface $tokenGeneratorInterface, MailerService $mailerService)
+    public function forgot(Request $request, UserRepository $userRepository, EntityManagerInterface $entityManager, TokenGeneratorInterface $tokenGeneratorInterface, MailerService $mailerService, UserService $userService)
     {
         $form = $this->createForm(ForgotType::class);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $email = $form->get('email')->getData();
-            $this->changePassword($userRepository, $entityManager, $tokenGeneratorInterface, $mailerService, $email);
+            $changePassword = $userService->changePassword($userRepository, $entityManager, $tokenGeneratorInterface, $mailerService, $email);
+
+            if (isset($changePassword['error'])) {
+                $this->addFlash('error', $changePassword['error']);
+            } else {
+                $this->addFlash('success', $changePassword['success']);
+                return $this->redirectToRoute('app_forgot');
+            }
         }
 
         return $this->render('user/forgot.html.twig', [
@@ -111,96 +131,5 @@ class MainController extends AbstractController {
         $this->addFlash('success', FlashMessages::ACTIVATION_OK);
         return $this->redirectToRoute('app_login');
     }
-
-    private function checkExistingUser(User $user, EntityManagerInterface $entityManager): bool 
-    {
-        $existingUser = $entityManager->getRepository(User::class)->findOneBy(['username' => $user->getUsername()]);
-        if ($existingUser) {
-            $this->addFlash('error', FlashMessages::ALREADY_NAME);
-            return true;
-        }
-
-        $existingUserByEmail = $entityManager->getRepository(User::class)->findOneBy(['email' => $user->getEmail()]);
-        if ($existingUserByEmail) {
-            $this->addFlash('error', FlashMessages::ALREADY_EMAIL);
-            return true;
-        }
-
-        return false;
-    }
-
-    private function createUser(Request $request, UserPasswordHasherInterface $passwordHasher, ValidatorInterface $validator, EntityManagerInterface $entityManager, MailerService $mailerService, TokenGeneratorInterface $tokenGeneratorInterface): ?User 
-    {
-        $user = new User();
-        $form = $this->createForm(UserType::class, $user);
-        $form->handleRequest($request);
-        
-        if (!$form->isSubmitted()) {
-            return null;
-        }
-        
-        $errors = $validator->validate($user);
-        if ($this->checkExistingUser($user, $entityManager)) {
-                return null;
-        }
-        
-        if ($errors->count() > 0) {
-            foreach ($errors as $violation) {
-                $this->addFlash('error', $violation->getMessage());
-            }
-            return null;
-        } else {
-            $user->setPassword($passwordHasher->hashPassword($user, $user->getPassword()));
-
-            $token = $tokenGeneratorInterface->generateToken();
-            $user->setToken($token);
-
-            $entityManager->persist($user);
-            $entityManager->flush();
-
-            $mailerService->send(
-                $user->getEmail(),
-                'Confirmation du compte',
-                'registration.html.twig',
-                [
-                    'user' => $user,
-                    'token' => $token
-                ]
-            );
-
-            $this->addFlash('success', FlashMessages::SIGNUP_OK);
-            return $user;
-        }
-        
-    }
-
-    private function changePassword($userRepository, $entityManager, $tokenGeneratorInterface, $mailerService, $email)
-    {
-        $user = $userRepository->findOneBy(['email' => $email]);
-
-        if ($user) {
-            $token = $tokenGeneratorInterface->generateToken();
-            $user->setToken($token);
-            $entityManager->persist($user);
-            $entityManager->flush();
-    
-            $mailerService->send(
-                $user->getEmail(),
-                'Réinitialisation du mot de passe',
-                'forgot.html.twig',
-                [
-                    'user' => $user,
-                    'token' => $token
-                ]
-            );
-            $this->addFlash('success', FlashMessages::RECOVERY_OK);
-            return $this->redirectToRoute('app_forgot');
-                
-        } else {
-            $this->addFlash('error', FlashMessages::RECOVERY_KO);
-            return $this->redirectToRoute('app_forgot');
-        }
-    }
-    
 
 }
