@@ -12,7 +12,7 @@ class FlashMessages
     const ALREADY_EMAIL = 'Un utilisateur avec le même email existe déjà.';
     const SIGNUP_OK = 'Félicitation Rider ! Vous allez recevoir un email pour valider votre inscription.';
     const TRICK_OK = 'Félicitations, vous avez créé le trick : ';
-    const PROBLEM = 'Oups, il semble y avoir un soucis';
+    const PROBLEM = 'Oups, il semble y avoir un souci';
     const MESSAGE_OK = 'Votre message a bien été publié';
     const TRICK_UPDATE = 'Félicitations, vous avez modifié le trick : ';
     const BANNER_CHANGE = "Héhé, ça c'est un bon choix de bannière :-)";
