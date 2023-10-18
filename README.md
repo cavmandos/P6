@@ -6,10 +6,10 @@ Un site communautaire pour les passionnés de Snowboard.
 
 ## Table des matières
 
-- [Aperçu](#aperçu)
-- [Description](#description)
-- [Installation](#installation)
-- [Configuration](#configuration)
+-  [Aperçu](#aperçu)
+-  [Description](#description)
+-  [Installation](#installation)
+-  [Configuration](#configuration)
 
 ## Aperçu
 
@@ -25,47 +25,50 @@ Pour ce projet, nous allons nous concentrer sur la création technique du site p
 
 Vous êtes chargé de développer le site répondant aux besoins de Jimmy. Vous devez ainsi implémenter les fonctionnalités suivantes : 
 
-- un annuaire des figures de snowboard. Vous pouvez vous inspirer de la liste des figures sur Wikipédia. Contentez-vous d'intégrer 10 figures, le reste sera saisi par les internautes ;
-- la gestion des figures (création, modification, consultation) ;
-- un espace de discussion commun à toutes les figures.
+-  un annuaire des figures de snowboard. Vous pouvez vous inspirer de la liste des figures sur Wikipédia. Contentez-vous d'intégrer 10 figures, le reste sera saisi par les internautes ;
+-  la gestion des figures (création, modification, consultation) ;
+-  un espace de discussion commun à toutes les figures.
 
 Pour implémenter ces fonctionnalités, vous devez créer les pages suivantes :
 
-- la page d’accueil où figurera la liste des figures ; 
-- la page de création d'une nouvelle figure ;
-- la page de modification d'une figure ;
-- la page de présentation d’une figure (contenant l’espace de discussion commun autour d’une figure).
+-  la page d’accueil où figurera la liste des figures ; 
+-  la page de création d'une nouvelle figure ;
+-  la page de modification d'une figure ;
+-  la page de présentation d’une figure (contenant l’espace de discussion commun autour d’une figure).
 
 ## Installation
 
 Pour exécuter ce projet localement, suivez ces étapes simples :
 
-1. Avant de commencer, assurez-vous d'avoir les éléments suivants installés sur votre système :
+1.  Avant de commencer, assurez-vous d'avoir les éléments suivants installés sur votre système :
 
-- [PHP](https://www.php.net/manual/en/install.php) (version recommandée)
-- [Composer](https://getcomposer.org/download/)
-- [Symfony CLI](https://symfony.com/download)
+-  [PHP](https://www.php.net/manual/en/install.php)
+-  [Composer](https://getcomposer.org/download/)
+-  [Symfony CLI](https://symfony.com/download)
 
-2. Clonez ce dépôt en utilisant la commande suivante :
+2.  Clonez ce dépôt en utilisant la commande suivante :
 
 ```bash 
 git clone https://github.com/cavmandos/P6.git
+```
 
-
-3. Installez les dépendances avec composer :
+3.  Installez les dépendances avec composer :
 
 ```bash
 composer install
+```
 
-4. Créez la base de données et effectuez les migrations :
+4.  Créez la base de données et effectuez les migrations :
 
 ```bash
 php bin/console doctrine:database:create
 php bin/console doctrine:migrations:migrate
+```
 
-5. Lancez votre serveur :
+5.  Lancez votre serveur :
 
 ```bash
 symfony serve
+```
 
-6. Se rendre sur son navigateur favori à l'url indiquée
+6.  Se rendre sur son navigateur favori à l'url indiquée
