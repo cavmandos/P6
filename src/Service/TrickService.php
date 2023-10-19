@@ -120,7 +120,7 @@ class TrickService
                 $media->setBanner(true);
                 $manager->persist($media);
             } else {
-                return ['error', FlashMessages::TOO_LARGE];
+                return ['error' => FlashMessages::TOO_LARGE];
             }
         }
     }
@@ -137,7 +137,7 @@ class TrickService
                 $media->setBanner(false);
                 $manager->persist($media);
             } else {
-                return ['error', FlashMessages::TOO_LARGE];
+                return ['error' => FlashMessages::TOO_LARGE];
             }
         }
     }

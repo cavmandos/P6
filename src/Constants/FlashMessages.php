@@ -20,4 +20,5 @@ class FlashMessages
     const MEDIA_DELETE = "Le media a bien été supprimé";
     const MESSAGE_DELETE = "Ce commentaire a bien été supprimé";
     const TOO_LARGE = 'Le fichier fourni est trop volumineux (maxi 1mo)';
+    const UNIQUE_TRICK = 'Ce nom de trick est déjà utilisé';
 }

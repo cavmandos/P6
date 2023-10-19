@@ -56,7 +56,12 @@ class TricksController extends AbstractController {
                 return $this->redirectToRoute('app_main');
             }
         } catch (Exception $e) {
-            $this->addFlash('error', FlashMessages::PROBLEM);
+            $message = $e->getMessage();
+            if (strpos($message, 'Duplicate entry') !== false) {
+                $this->addFlash('error', FlashMessages::UNIQUE_TRICK);
+            } else {
+                $this->addFlash('error', $message);
+            }
             $this->redirectToRoute('app_create');
         }
 
@@ -141,7 +146,12 @@ class TricksController extends AbstractController {
                 return $this->redirectToRoute('app_trick_show', ['slug' => $trick->getSlug()]);
             }
         } catch (Exception $e) {
-            $this->addFlash('error', FlashMessages::PROBLEM);
+            $message = $e->getMessage();
+            if (strpos($message, 'Duplicate entry') !== false) {
+                $this->addFlash('error', FlashMessages::UNIQUE_TRICK);
+            } else {
+                $this->addFlash('error', $message);
+            }
             $this->redirectToRoute('app_trick_update', ['name' => $trick->getName()]);
         }
 

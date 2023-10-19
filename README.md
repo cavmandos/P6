@@ -45,7 +45,17 @@ Pour exécuter ce projet localement, suivez ces étapes simples :
 -  [Composer](https://getcomposer.org/download/)
 -  [Symfony CLI](https://symfony.com/download)
 
-2.  Clonez ce dépôt en utilisant la commande suivante :
+Si vous souhaitez utiliser MailDev pour tester l'envoi de mails :
+
+-  [NodeJS](https://nodejs.org/fr)
+
+Pour installer MailDev :
+
+```bash 
+npm i maildev
+```
+
+2.  Ensuite, clonez le dépôt du projet en utilisant la commande suivante :
 
 ```bash 
 git clone https://github.com/cavmandos/P6.git
@@ -57,17 +67,29 @@ git clone https://github.com/cavmandos/P6.git
 composer install
 ```
 
-4.  Créez la base de données et effectuez les migrations :
+4.  Importez la base de donnée fournie à la racine du projet, contenant une dizaine de figures, deux utilisateurs et quelques commentaires.
+
+Si vous préférez partir de zéro : créez la base de données et effectuez les migrations :
 
 ```bash
 php bin/console doctrine:database:create
 php bin/console doctrine:migrations:migrate
 ```
 
-5.  Lancez votre serveur :
+5.  Configurez votre fichier .env :
+
+APP_ENV=dev
+APP_SECRET=390394c888077f0aca4b93dc8765eb16
+DATABASE_URL="votre-url-de-base-de-données" (voir la documentation de Symfony pour un exemple d'url)
+MESSENGER_TRANSPORT_DSN=doctrine://default?auto_setup=0
+MAILER_DSN="votre-Url-Smtp"
+
+6.  Lancez votre serveur :
 
 ```bash
 symfony serve
 ```
 
-6.  Se rendre sur son navigateur favori à l'url indiquée
+7.  (optionnel) Lancez MailDev.
+
+7.  Se rendre sur son navigateur favori à l'url indiquée, et tester le projet !
