@@ -170,7 +170,7 @@ class TricksController extends AbstractController {
         
         $entityManager->flush();
         $this->addFlash('success', FlashMessages::BANNER_CHANGE);
-        return $this->redirectToRoute('app_trick_update', ['slug' => $trick->getSlug()]);
+        return $this->redirectToRoute('app_trick_update', ['name' => $trick->getName()]);
     }
 
     #[Route('/tricks/delete/{id}', name: 'trick_delete')]

@@ -9,7 +9,6 @@ Un site communautaire pour les passionnés de Snowboard.
 -  [Aperçu](#aperçu)
 -  [Description](#description)
 -  [Installation](#installation)
--  [Configuration](#configuration)
 
 ## Aperçu
 
