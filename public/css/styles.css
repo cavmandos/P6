@@ -10941,3 +10941,10 @@ iframe {
   height: 140px;
   object-fit: cover;
 }
+
+.btn-circle {
+  width: 55px;
+  height: 55px;
+  padding: 13px 18px;
+  border-radius: 60px;
+}

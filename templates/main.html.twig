@@ -67,6 +67,9 @@
     </div>
     {% endfor %}
 </div>
+{% if tricks|length > 15 %}
+    <p class="d-flex justify-content-end"><a class="btn btn-info btn-circle mt-5 d-flex align-items-center justify-content-center" href="#repere"><i class="bi bi-arrow-up"></i></a></p>
+{% endif %}
 </div>
 </section>
 

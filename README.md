@@ -78,11 +78,11 @@ php bin/console doctrine:migrations:migrate
 
 5.  Configurez votre fichier .env :
 
-APP_ENV=dev
-APP_SECRET=390394c888077f0aca4b93dc8765eb16
-DATABASE_URL="votre-url-de-base-de-données" (voir la documentation de Symfony pour un exemple d'url)
-MESSENGER_TRANSPORT_DSN=doctrine://default?auto_setup=0
-MAILER_DSN="votre-Url-Smtp"
+-  APP_ENV=dev
+-  APP_SECRET=390394c888077f0aca4b93dc8765eb16
+-  DATABASE_URL="votre-url-de-base-de-données" (voir la documentation de Symfony pour un exemple d'url)
+-  MESSENGER_TRANSPORT_DSN=doctrine://default?auto_setup=0
+-  MAILER_DSN="votre-Url-Smtp"
 
 6.  Lancez votre serveur :
 
